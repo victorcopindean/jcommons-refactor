@@ -53,9 +53,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import junit.framework.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assertions.*;
 
 /**
  * Some JUnit tests for the {@link SerialDate} class.
@@ -316,4 +317,117 @@ public class SerialDateTest extends TestCase {
         assertEquals(7, d4.getMonth());
         assertEquals(2004, d4.getYYYY());
     }
+
+    public void testIsValidWeekInMonthCodeTrue() {
+        assertTrue(SerialDate.isValidWeekInMonthCode(4));
+    }
+
+    public void testIsValidWeekInMonthCodeFalse() {
+        assertFalse(SerialDate.isValidWeekInMonthCode(5));
+    }
+
+    public void testIsValidMonthCodeFalse() {
+        assertFalse(SerialDate.isValidMonthCode(13));
+    }
+
+    public void testMonthCodeToQuarterQOne() {
+        assertEquals(1, SerialDate.monthCodeToQuarter(1));
+        assertEquals(1, SerialDate.monthCodeToQuarter(2));
+        assertEquals(1, SerialDate.monthCodeToQuarter(3));
+    }
+
+    public void testMonthCodeToQuarterQTwo() {
+        assertEquals(2, SerialDate.monthCodeToQuarter(4));
+        assertEquals(2, SerialDate.monthCodeToQuarter(5));
+        assertEquals(2, SerialDate.monthCodeToQuarter(6));
+    }
+
+    public void testMonthCodeToQuarterQThree() {
+        assertEquals(3, SerialDate.monthCodeToQuarter(7));
+        assertEquals(3, SerialDate.monthCodeToQuarter(8));
+        assertEquals(3, SerialDate.monthCodeToQuarter(9));
+    }
+
+    public void testMonthCodeToQuarterQFour() {
+        assertEquals(4, SerialDate.monthCodeToQuarter(10));
+        assertEquals(4, SerialDate.monthCodeToQuarter(11));
+        assertEquals(4, SerialDate.monthCodeToQuarter(12));
+    }
+
+    public void testMonthCodeToQuarterInvalid() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+            SerialDate.monthCodeToQuarter(14));
+    }
+
+    public void testMonthCodeToStringInvalid() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.monthCodeToString(15,true));
+    }
+
+    public void testMonthCodeToStringShort() {
+        assertEquals("Jan", SerialDate.monthCodeToString(1, true));
+    }
+
+    public void testGetFollowingDayOfTheWeekInvalidCode() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getFollowingDayOfWeek(8,nov9Y2001));
+    }
+
+    public void testGetFollowingDayOfTheWeekTargetSmallerThanBase() {
+        SerialDate serialDate = SerialDate.createInstance(20,11,2019);
+        SerialDate serialDateExpected = SerialDate.createInstance(23,11,2019);
+        assertEquals(serialDateExpected, serialDate.getFollowingDayOfWeek(7));
+    }
+
+    public void testGetNearestDayOfTheWeekInvalid() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getNearestDayOfWeek(8, nov9Y2001));
+    }
+
+    public void testGetNearestDayOfTheWeekTargetSmallerThanBase() {
+        SerialDate serialDate = SerialDate.createInstance(23,11,2019);
+        SerialDate serialDateExpected = SerialDate.createInstance(25,11,2019);
+        assertEquals(serialDateExpected, serialDate.getNearestDayOfWeek(2));
+    }
+
+    public void testGetEndOfCurrentMonth() {
+        SerialDate serialDate = SerialDate.createInstance(19,11,2019);
+        SerialDate serialDateExpected = SerialDate.createInstance(30,11,2019);
+        assertEquals(serialDateExpected, serialDate.getEndOfCurrentMonth(serialDate));
+    }
+
+    public void testWeekInMonthToString() {
+        assertEquals("First",SerialDate.weekInMonthToString(1));
+        assertEquals("Second",SerialDate.weekInMonthToString(2));
+        assertEquals("Third",SerialDate.weekInMonthToString(3));
+        assertEquals("Fourth",SerialDate.weekInMonthToString(4));
+        assertEquals("Last",SerialDate.weekInMonthToString(0));
+        assertEquals("SerialDate.weekInMonthToString(): invalid code.", SerialDate.weekInMonthToString(8));
+    }
+
+    public void testGetPreviousDayOfTheWeekInvalid() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getPreviousDayOfWeek(8,nov9Y2001));
+    }
+
+    public void testGetPreviousDayOfTheWeekTargetDOWGreaterThanBaseDOW() {
+        SerialDate serialDate = SerialDate.createInstance(19,11,2019);
+        SerialDate serialDateExpected = SerialDate.createInstance(14,11,2019);
+        assertEquals(serialDateExpected, serialDate.getPreviousDayOfWeek(5));
+    }
+
+    public void testGetMonths() {
+        String[] monthNames = SerialDate.getMonths();
+        String[] monthNamesExpected = {"January", "February", "March", "April", "May", "June", "July", "August", "September",
+          "October", "November" , "December" , ""};
+
+        assertEquals(monthNamesExpected.length, monthNames.length);
+        assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
+    }
+
+    public void testGetMonthsShortened() {
+        String[] monthNames = SerialDate.getMonths(true);
+        String[] monthNamesExpected = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                "Oct", "Nov" , "Dec" , ""};
+
+        assertEquals(monthNamesExpected.length, monthNames.length);
+        assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
+    }
+
 }

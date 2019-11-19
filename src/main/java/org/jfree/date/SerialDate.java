@@ -286,7 +286,7 @@ public abstract class SerialDate implements Comparable,
     }
 
     /**
-     * Returns an array of month names.
+     * Returns an array of month names. Returns size 13 array instead of 12. Should be modified.
      *
      * @return an array of month names.
      */
@@ -297,7 +297,7 @@ public abstract class SerialDate implements Comparable,
     }
 
     /**
-     * Returns an array of month names.
+     * Returns an array of month names. Returns size 13 array instead of 12. Should be modified.
      *
      * @param shortened  a flag indicating that shortened month names should 
      *                   be returned.
@@ -709,18 +709,13 @@ public abstract class SerialDate implements Comparable,
                 "Invalid day-of-the-week code."
             );
         }
-
         // find the date...
         final int baseDOW = base.getDayOfWeek();
         int adjust = -Math.abs(targetDOW - baseDOW);
-        if (adjust >= 4) {
-            adjust = 7 - adjust;
-        }
-        if (adjust <= -4) {
+        if (adjust <= - 4) {
             adjust = 7 + adjust;
         }
         return SerialDate.addDays(adjust, base);
-
     }
 
     /**
