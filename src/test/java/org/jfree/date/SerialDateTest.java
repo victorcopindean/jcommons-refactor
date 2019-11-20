@@ -318,11 +318,10 @@ public class SerialDateTest extends TestCase {
         assertEquals(2004, d4.getYYYY());
     }
 
-    public void testIsValidWeekInMonthCodeTrue() {
-        assertTrue(SerialDate.isValidWeekInMonthCode(4));
-    }
-
-    public void testIsValidWeekInMonthCodeFalse() {
+    public void testIsValidWeekInMonthCode() {
+        for(int i=0; i<= 4; i++){
+            assertTrue(SerialDate.isValidWeekInMonthCode(i));
+        }
         assertFalse(SerialDate.isValidWeekInMonthCode(5));
     }
 
@@ -330,34 +329,23 @@ public class SerialDateTest extends TestCase {
         assertFalse(SerialDate.isValidMonthCode(13));
     }
 
-    public void testMonthCodeToQuarterQOne() {
+    public void testMonthCodeToQuarter() {
         assertEquals(1, SerialDate.monthCodeToQuarter(1));
         assertEquals(1, SerialDate.monthCodeToQuarter(2));
         assertEquals(1, SerialDate.monthCodeToQuarter(3));
-    }
-
-    public void testMonthCodeToQuarterQTwo() {
         assertEquals(2, SerialDate.monthCodeToQuarter(4));
         assertEquals(2, SerialDate.monthCodeToQuarter(5));
         assertEquals(2, SerialDate.monthCodeToQuarter(6));
-    }
-
-    public void testMonthCodeToQuarterQThree() {
         assertEquals(3, SerialDate.monthCodeToQuarter(7));
         assertEquals(3, SerialDate.monthCodeToQuarter(8));
         assertEquals(3, SerialDate.monthCodeToQuarter(9));
-    }
-
-    public void testMonthCodeToQuarterQFour() {
         assertEquals(4, SerialDate.monthCodeToQuarter(10));
         assertEquals(4, SerialDate.monthCodeToQuarter(11));
         assertEquals(4, SerialDate.monthCodeToQuarter(12));
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                SerialDate.monthCodeToQuarter(14));
     }
 
-    public void testMonthCodeToQuarterInvalid() {
-        Assertions.assertThrows(IllegalArgumentException.class, () ->
-            SerialDate.monthCodeToQuarter(14));
-    }
 
     public void testMonthCodeToStringInvalid() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.monthCodeToString(15,true));
@@ -367,24 +355,78 @@ public class SerialDateTest extends TestCase {
         assertEquals("Jan", SerialDate.monthCodeToString(1, true));
     }
 
-    public void testGetFollowingDayOfTheWeekInvalidCode() {
+    private static SpreadsheetDate d(int day, int month, int year){
+        return new SpreadsheetDate(day, month, year);
+    }
+
+    public void testGetFollowingDayOfTheWeek() {
+
+        assertEquals(d(1, 1,2020), d(25,12,2019).getFollowingDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(23, 11, 2019), d(20,11,2019).getFollowingDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(28,11,2019), d(23, 11, 2019).getFollowingDayOfWeek(SerialDate.THURSDAY));
         Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getFollowingDayOfWeek(8,nov9Y2001));
+
     }
 
-    public void testGetFollowingDayOfTheWeekTargetSmallerThanBase() {
-        SerialDate serialDate = SerialDate.createInstance(20,11,2019);
-        SerialDate serialDateExpected = SerialDate.createInstance(23,11,2019);
-        assertEquals(serialDateExpected, serialDate.getFollowingDayOfWeek(7));
-    }
+    public void testGetNearestDayOfTheWeek(){
 
-    public void testGetNearestDayOfTheWeekInvalid() {
+        assertEquals(d(24,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(24,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(24,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(24,11,2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(1,12,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(1, 12,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(1, 12, 2019), d(30, 11, 2019).getNearestDayOfWeek(SerialDate.SUNDAY));
+
+        assertEquals(d(25,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(25,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(25,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(25, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(25,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(2,12,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(2,12,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.MONDAY));
+
+        assertEquals(d(26,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(26,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(26,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(26, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(26,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(26,11,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(3,12,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.TUESDAY));
+
+        assertEquals(d(27,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.WEDNESDAY));
+
+        assertEquals(d(21,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28,11,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(28,11,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.THURSDAY));
+
+        assertEquals(d(22,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(22,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(29,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(29, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(29,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(29,11,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(29,11,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.FRIDAY));
+
+        assertEquals(d(23,11,2019), d(24,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(23,11,2019), d(25,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(23,11,2019), d(26,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(30, 11, 2019), d(27,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(30,11,2019), d(28,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(30,11,2019), d(29,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(30,11,2019), d(30,11,2019).getNearestDayOfWeek(SerialDate.SATURDAY));
+
         Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getNearestDayOfWeek(8, nov9Y2001));
-    }
-
-    public void testGetNearestDayOfTheWeekTargetSmallerThanBase() {
-        SerialDate serialDate = SerialDate.createInstance(23,11,2019);
-        SerialDate serialDateExpected = SerialDate.createInstance(25,11,2019);
-        assertEquals(serialDateExpected, serialDate.getNearestDayOfWeek(2));
     }
 
     public void testGetEndOfCurrentMonth() {
