@@ -53,7 +53,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import junit.framework.*;
@@ -121,53 +120,18 @@ public class SerialDateTest extends TestCase {
     }
 
     /**
-     * Monday preceding Friday 9 November 2001 should be 5 November.
-     */
-    public void testMondayPrecedingFriday9Nov2001() {
-        SerialDate mondayBefore = SerialDate.getPreviousDayOfWeek(
-            SerialDate.MONDAY, this.nov9Y2001
-        );
-        assertEquals(5, mondayBefore.getDayOfMonth());
-    }
-
-    /**
-     * Monday following Friday 9 November 2001 should be 12 November.
-     */
-    public void testMondayFollowingFriday9Nov2001() {
-        SerialDate mondayAfter = SerialDate.getFollowingDayOfWeek(
-            SerialDate.MONDAY, this.nov9Y2001
-        );
-        assertEquals(12, mondayAfter.getDayOfMonth());
-    }
-
-    /**
-     * Monday nearest Friday 9 November 2001 should be 12 November.
-     */
-    public void testMondayNearestFriday9Nov2001() {
-        SerialDate mondayNearest = SerialDate.getNearestDayOfWeek(
-            SerialDate.MONDAY, this.nov9Y2001
-        );
-        assertEquals(12, mondayNearest.getDayOfMonth());
-    }
-
-    /**
-     * The Monday nearest to 22nd January 1970 falls on the 19th.
-     */
-    public void testMondayNearest22Jan1970() {
-        SerialDate jan22Y1970 = SerialDate.createInstance(22, MonthConstants.JANUARY, 1970);
-        SerialDate mondayNearest = SerialDate.getNearestDayOfWeek(SerialDate.MONDAY, jan22Y1970);
-        assertEquals(19, mondayNearest.getDayOfMonth());
-    }
-
-    /**
      * Problem that the conversion of days to strings returns the right result.  Actually, this 
      * result depends on the Locale so this test needs to be modified.
      */
     public void testWeekdayCodeToString() {
 
-        final String test = SerialDate.weekdayCodeToString(SerialDate.SATURDAY);
-        assertEquals("Saturday", test);
-
+        assertEquals("Monday", SerialDate.weekdayCodeToString(SerialDate.MONDAY));
+        assertEquals("Tuesday", SerialDate.weekdayCodeToString(SerialDate.TUESDAY));
+        assertEquals("Wednesday", SerialDate.weekdayCodeToString(SerialDate.WEDNESDAY));
+        assertEquals("Thursday", SerialDate.weekdayCodeToString(SerialDate.THURSDAY));
+        assertEquals("Friday", SerialDate.weekdayCodeToString(SerialDate.FRIDAY));
+        assertEquals("Saturday", SerialDate.weekdayCodeToString(SerialDate.SATURDAY));
+        assertEquals("Sunday", SerialDate.weekdayCodeToString(SerialDate.SUNDAY));
     }
 
     /**
@@ -176,14 +140,21 @@ public class SerialDateTest extends TestCase {
      */
     public void testStringToWeekday() {
 
-        int weekday = SerialDate.stringToWeekdayCode("Wednesday");
-        assertEquals(SerialDate.WEDNESDAY, weekday);
+        assertEquals(SerialDate.MONDAY, SerialDate.stringToWeekdayCode("Monday"));
+        assertEquals(SerialDate.TUESDAY, SerialDate.stringToWeekdayCode("Tuesday"));
+        assertEquals(SerialDate.WEDNESDAY, SerialDate.stringToWeekdayCode("Wednesday"));
+        assertEquals(SerialDate.THURSDAY, SerialDate.stringToWeekdayCode("Thursday"));
+        assertEquals(SerialDate.FRIDAY, SerialDate.stringToWeekdayCode("Friday"));
+        assertEquals(SerialDate.SATURDAY, SerialDate.stringToWeekdayCode("Saturday"));
+        assertEquals(SerialDate.SUNDAY, SerialDate.stringToWeekdayCode("Sunday"));
 
-        weekday = SerialDate.stringToWeekdayCode(" Wednesday ");
-        assertEquals(SerialDate.WEDNESDAY, weekday);
-
-        weekday = SerialDate.stringToWeekdayCode("Wed");
-        assertEquals(SerialDate.WEDNESDAY, weekday);
+        assertEquals(SerialDate.MONDAY, SerialDate.stringToWeekdayCode("Mon"));
+        assertEquals(SerialDate.TUESDAY, SerialDate.stringToWeekdayCode("Tue"));
+        assertEquals(SerialDate.WEDNESDAY, SerialDate.stringToWeekdayCode("Wed"));
+        assertEquals(SerialDate.THURSDAY, SerialDate.stringToWeekdayCode("Thu"));
+        assertEquals(SerialDate.FRIDAY, SerialDate.stringToWeekdayCode("Fri"));
+        assertEquals(SerialDate.SATURDAY, SerialDate.stringToWeekdayCode("Sat"));
+        assertEquals(SerialDate.SUNDAY, SerialDate.stringToWeekdayCode("Sun"));
 
     }
 
@@ -193,20 +164,33 @@ public class SerialDateTest extends TestCase {
      */
     public void testStringToMonthCode() {
 
-        int m = SerialDate.stringToMonthCode("January");
-        assertEquals(MonthConstants.JANUARY, m);
+        assertEquals(MonthConstants.JANUARY, SerialDate.stringToMonthCode("January"));
+        assertEquals(MonthConstants.FEBRUARY, SerialDate.stringToMonthCode("February"));
+        assertEquals(MonthConstants.MARCH, SerialDate.stringToMonthCode("March"));
+        assertEquals(MonthConstants.APRIL, SerialDate.stringToMonthCode("April"));
+        assertEquals(MonthConstants.MAY, SerialDate.stringToMonthCode("May"));
+        assertEquals(MonthConstants.JUNE, SerialDate.stringToMonthCode("June"));
+        assertEquals(MonthConstants.JULY, SerialDate.stringToMonthCode("July"));
+        assertEquals(MonthConstants.AUGUST, SerialDate.stringToMonthCode("August"));
+        assertEquals(MonthConstants.SEPTEMBER, SerialDate.stringToMonthCode("September"));
+        assertEquals(MonthConstants.OCTOBER, SerialDate.stringToMonthCode("October"));
+        assertEquals(MonthConstants.NOVEMBER, SerialDate.stringToMonthCode("November"));
+        assertEquals(MonthConstants.DECEMBER, SerialDate.stringToMonthCode("December"));
 
-        m = SerialDate.stringToMonthCode(" January ");
-        assertEquals(MonthConstants.JANUARY, m);
-
-        m = SerialDate.stringToMonthCode("Jan");
-        assertEquals(MonthConstants.JANUARY, m);
-
+        assertEquals(MonthConstants.JANUARY, SerialDate.stringToMonthCode("Jan"));
+        assertEquals(MonthConstants.FEBRUARY, SerialDate.stringToMonthCode("Feb"));
+        assertEquals(MonthConstants.MARCH, SerialDate.stringToMonthCode("Mar"));
+        assertEquals(MonthConstants.APRIL, SerialDate.stringToMonthCode("Apr"));
+        assertEquals(MonthConstants.MAY, SerialDate.stringToMonthCode("May"));
+        assertEquals(MonthConstants.JUNE, SerialDate.stringToMonthCode("Jun"));
+        assertEquals(MonthConstants.JULY, SerialDate.stringToMonthCode("Jul"));
+        assertEquals(MonthConstants.AUGUST, SerialDate.stringToMonthCode("Aug"));
+        assertEquals(MonthConstants.SEPTEMBER, SerialDate.stringToMonthCode("Sep"));
+        assertEquals(MonthConstants.OCTOBER, SerialDate.stringToMonthCode("Oct"));
+        assertEquals(MonthConstants.NOVEMBER, SerialDate.stringToMonthCode("Nov"));
+        assertEquals(MonthConstants.DECEMBER, SerialDate.stringToMonthCode("Dec"));
     }
 
-    /**
-     * Tests the conversion of a month code to a string.
-     */
     public void testMonthCodeToString() {
 
         assertEquals("January", SerialDate.monthCodeToString(MonthConstants.JANUARY));
