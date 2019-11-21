@@ -52,11 +52,13 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import junit.framework.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Some JUnit tests for the {@link SerialDate} class.
@@ -205,11 +207,36 @@ public class SerialDateTest extends TestCase {
     /**
      * Tests the conversion of a month code to a string.
      */
-    public void testMonthCodeToStringCode() {
+    public void testMonthCodeToString() {
 
-        final String test = SerialDate.monthCodeToString(MonthConstants.DECEMBER);
-        assertEquals("December", test);
+        assertEquals("January", SerialDate.monthCodeToString(MonthConstants.JANUARY));
+        assertEquals("February", SerialDate.monthCodeToString(MonthConstants.FEBRUARY));
+        assertEquals("March", SerialDate.monthCodeToString(MonthConstants.MARCH));
+        assertEquals("April", SerialDate.monthCodeToString(MonthConstants.APRIL));
+        assertEquals("May", SerialDate.monthCodeToString(MonthConstants.MAY));
+        assertEquals("June", SerialDate.monthCodeToString(MonthConstants.JUNE));
+        assertEquals("July", SerialDate.monthCodeToString(MonthConstants.JULY));
+        assertEquals("August", SerialDate.monthCodeToString(MonthConstants.AUGUST));
+        assertEquals("September", SerialDate.monthCodeToString(MonthConstants.SEPTEMBER));
+        assertEquals("October", SerialDate.monthCodeToString(MonthConstants.OCTOBER));
+        assertEquals("November", SerialDate.monthCodeToString(MonthConstants.NOVEMBER));
+        assertEquals("December", SerialDate.monthCodeToString(MonthConstants.DECEMBER));
 
+        assertEquals("Jan", SerialDate.monthCodeToString(MonthConstants.JANUARY, true));
+        assertEquals("Feb", SerialDate.monthCodeToString(MonthConstants.FEBRUARY, true));
+        assertEquals("Mar", SerialDate.monthCodeToString(MonthConstants.MARCH, true));
+        assertEquals("Apr", SerialDate.monthCodeToString(MonthConstants.APRIL, true));
+        assertEquals("May", SerialDate.monthCodeToString(MonthConstants.MAY, true));
+        assertEquals("Jun", SerialDate.monthCodeToString(MonthConstants.JUNE, true));
+        assertEquals("Jul", SerialDate.monthCodeToString(MonthConstants.JULY, true));
+        assertEquals("Aug", SerialDate.monthCodeToString(MonthConstants.AUGUST, true));
+        assertEquals("Sep", SerialDate.monthCodeToString(MonthConstants.SEPTEMBER, true));
+        assertEquals("Oct", SerialDate.monthCodeToString(MonthConstants.OCTOBER, true));
+        assertEquals("Nov", SerialDate.monthCodeToString(MonthConstants.NOVEMBER, true));
+        assertEquals("Dec", SerialDate.monthCodeToString(MonthConstants.DECEMBER, true));
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.monthCodeToString(15,true));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.monthCodeToString(0));
     }
 
     /**
@@ -325,7 +352,10 @@ public class SerialDateTest extends TestCase {
         assertFalse(SerialDate.isValidWeekInMonthCode(5));
     }
 
-    public void testIsValidMonthCodeFalse() {
+    public void testIsValidMonth() {
+        for(int i = 1; i <= 12; i++){
+            assertTrue(SerialDate.isValidMonthCode(i));
+        }
         assertFalse(SerialDate.isValidMonthCode(13));
     }
 
@@ -346,24 +376,20 @@ public class SerialDateTest extends TestCase {
                 SerialDate.monthCodeToQuarter(14));
     }
 
-
-    public void testMonthCodeToStringInvalid() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.monthCodeToString(15,true));
-    }
-
-    public void testMonthCodeToStringShort() {
-        assertEquals("Jan", SerialDate.monthCodeToString(1, true));
-    }
-
     private static SpreadsheetDate d(int day, int month, int year){
         return new SpreadsheetDate(day, month, year);
     }
 
     public void testGetFollowingDayOfTheWeek() {
 
+        assertEquals(d(25,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(26,11,2019), d(21, 11, 2019).getFollowingDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(27,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(28,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(22,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(23,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.SATURDAY));
+        assertEquals(d(24,11,2019), d(21,11,2019).getFollowingDayOfWeek(SerialDate.SUNDAY));
         assertEquals(d(1, 1,2020), d(25,12,2019).getFollowingDayOfWeek(SerialDate.WEDNESDAY));
-        assertEquals(d(23, 11, 2019), d(20,11,2019).getFollowingDayOfWeek(SerialDate.SATURDAY));
-        assertEquals(d(28,11,2019), d(23, 11, 2019).getFollowingDayOfWeek(SerialDate.THURSDAY));
         Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getFollowingDayOfWeek(8,nov9Y2001));
 
     }
@@ -431,8 +457,7 @@ public class SerialDateTest extends TestCase {
 
     public void testGetEndOfCurrentMonth() {
         SerialDate serialDate = SerialDate.createInstance(19,11,2019);
-        SerialDate serialDateExpected = SerialDate.createInstance(30,11,2019);
-        assertEquals(serialDateExpected, serialDate.getEndOfCurrentMonth(serialDate));
+        assertEquals(d(30,11,2019), serialDate.getEndOfCurrentMonth(serialDate));
     }
 
     public void testWeekInMonthToString() {
@@ -444,21 +469,23 @@ public class SerialDateTest extends TestCase {
         assertEquals("SerialDate.weekInMonthToString(): invalid code.", SerialDate.weekInMonthToString(8));
     }
 
-    public void testGetPreviousDayOfTheWeekInvalid() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getPreviousDayOfWeek(8,nov9Y2001));
-    }
 
-    public void testGetPreviousDayOfTheWeekTargetDOWGreaterThanBaseDOW() {
-        SerialDate serialDate = SerialDate.createInstance(19,11,2019);
-        SerialDate serialDateExpected = SerialDate.createInstance(14,11,2019);
-        assertEquals(serialDateExpected, serialDate.getPreviousDayOfWeek(5));
+    public void testGetPreviousDayOfTheWeek() {
+
+        assertEquals(d(17,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.SUNDAY));
+        assertEquals(d(18,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.MONDAY));
+        assertEquals(d(19, 11, 2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.TUESDAY));
+        assertEquals(d(20,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.WEDNESDAY));
+        assertEquals(d(14,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.THURSDAY));
+        assertEquals(d(15,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.FRIDAY));
+        assertEquals(d(16,11,2019), d(21,11,2019).getPreviousDayOfWeek(SerialDate.SATURDAY));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SerialDate.getPreviousDayOfWeek(8,nov9Y2001));
     }
 
     public void testGetMonths() {
         String[] monthNames = SerialDate.getMonths();
         String[] monthNamesExpected = {"January", "February", "March", "April", "May", "June", "July", "August", "September",
           "October", "November" , "December" , ""};
-
         assertEquals(monthNamesExpected.length, monthNames.length);
         assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
     }
@@ -467,9 +494,32 @@ public class SerialDateTest extends TestCase {
         String[] monthNames = SerialDate.getMonths(true);
         String[] monthNamesExpected = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                 "Oct", "Nov" , "Dec" , ""};
-
         assertEquals(monthNamesExpected.length, monthNames.length);
         assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
+    }
+
+    public void testRelativeToString() {
+        assertEquals("Preceding", SerialDate.relativeToString(SerialDate.PRECEDING));
+        assertEquals("Nearest", SerialDate.relativeToString(SerialDate.NEAREST));
+        assertEquals("Following", SerialDate.relativeToString(SerialDate.FOLLOWING));
+        assertEquals("ERROR : Relative To String", SerialDate.relativeToString(3));
+    }
+
+    public void testCreateInstance() {
+        assertEquals(d(21,11,2019), SerialDate.createInstance(new GregorianCalendar(2019, Calendar.NOVEMBER,21).getTime()));
+    }
+
+    public void testDescription() {
+
+        SerialDate date = SerialDate.createInstance(21,11,2019);
+        date.setDescription("Date of current test");
+
+        assertEquals("Date of current test", date.getDescription());
+    }
+
+    public void testToString() {
+        SerialDate date = SerialDate.createInstance(21,11,2019);
+        assertEquals("21-November-2019", date.toString());
     }
 
 }

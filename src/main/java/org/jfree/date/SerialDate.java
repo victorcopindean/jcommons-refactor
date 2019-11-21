@@ -256,11 +256,11 @@ public abstract class SerialDate implements Comparable,
         int result = -1;
         s = s.trim();
         for (int i = 0; i < weekDayNames.length; i++) {
-            if (s.equals(shortWeekdayNames[i])) {
+            if (s.equalsIgnoreCase(shortWeekdayNames[i])) {
                 result = i;
                 break;
             }
-            if (s.equals(weekDayNames[i])) {
+            if (s.equalsIgnoreCase(weekDayNames[i])) {
                 result = i;
                 break;
             }
@@ -680,7 +680,7 @@ public abstract class SerialDate implements Comparable,
         // find the date...
         final int adjust;
         final int baseDOW = base.getDayOfWeek();
-        if (baseDOW > targetWeekday) {
+        if (baseDOW >= targetWeekday) {
             adjust = 7 + Math.min(0, targetWeekday - baseDOW);
         }
         else {
@@ -711,9 +711,12 @@ public abstract class SerialDate implements Comparable,
         }
         // find the date...
         final int baseDOW = base.getDayOfWeek();
-        int adjust = -Math.abs(targetDOW - baseDOW);
+        int adjust = targetDOW - baseDOW;
         if (adjust <= - 4) {
-            adjust = 7 + adjust;
+            adjust = (7 + adjust);
+        }
+        if(adjust >= 4) {
+            adjust = - (7 - adjust);
         }
         return SerialDate.addDays(adjust, base);
     }
