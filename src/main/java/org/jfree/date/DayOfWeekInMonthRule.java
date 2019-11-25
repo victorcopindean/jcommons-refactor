@@ -56,7 +56,7 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
     private int count;
 
     /** The day of the week (SerialDate.MONDAY, SerialDate.TUESDAY...). */
-    private int dayOfWeek;
+    private Day dayOfWeek;
 
     /** The month (1 to 12, or SerialDate.JANUARY, SerialDate.FEBRUARY...). */
     private int month;
@@ -65,7 +65,7 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
      * Default constructor: builds a rule for the first Monday in January by default.
      */
     public DayOfWeekInMonthRule() {
-        this(1, DayDate.MONDAY, MonthConstants.JANUARY);
+        this(1, Day.MONDAY, MonthConstants.JANUARY);
     }
 
     /**
@@ -75,7 +75,7 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
      * @param dayOfWeek  the day-of-the-week (SerialDate.MONDAY, SerialDate.TUESDAY, etc.).
      * @param month  the month (SerialDate.JANUARY, SerialDate.FEBRUARY, etc.).
      */
-    public DayOfWeekInMonthRule(final int count, final int dayOfWeek, final int month) {
+    public DayOfWeekInMonthRule(final int count, Day dayOfWeek, final int month) {
         this.count = count;
         this.dayOfWeek = dayOfWeek;
         this.month = month;
@@ -105,7 +105,7 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
      * @return the day-of-the-week.
      */
     public int getDayOfWeek() {
-        return this.dayOfWeek;
+        return this.dayOfWeek.index;
     }
 
     /**
@@ -113,7 +113,7 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
      *
      * @param dayOfWeek  the day-of-the-week.
      */
-    public void setDayOfWeek(final int dayOfWeek) {
+    public void setDayOfWeek(Day dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
 
@@ -144,10 +144,10 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
      */
     public DayDate getDate(final int year) {
         DayDate result;
-        if (this.count != DayDate.LAST_WEEK_IN_MONTH) {
+        if (this.count != DayDate.WeekInMonth.LAST.index) {
             // start at the beginning of the month
-            result = DayDate.createInstance(1, this.month, year);
-            while (result.getDayOfWeek() != this.dayOfWeek) {
+            result = DayDateFactory.makeDate(1, this.month, year);
+            while (result.getDayOfWeek() != this.dayOfWeek.index) {
                 result = DayDate.addDays(1, result);
             }
             result = DayDate.addDays(7 * (this.count - 1), result);
@@ -155,9 +155,9 @@ public class DayOfWeekInMonthRule extends AnnualDateRule {
         }
         else {
             // start at the end of the month and work backwards...
-            result = DayDate.createInstance(1, this.month, year);
+            result = DayDateFactory.makeDate(1, this.month, year);
             result = result.getEndOfCurrentMonth(result);
-            while (result.getDayOfWeek() != this.dayOfWeek) {
+            while (result.getDayOfWeek() != this.dayOfWeek.index) {
                 result = DayDate.addDays(-1, result);
             }
 

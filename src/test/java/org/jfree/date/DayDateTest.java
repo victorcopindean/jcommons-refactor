@@ -89,7 +89,7 @@ public class DayDateTest extends TestCase {
      * Problem set up.
      */
     protected void setUp() {
-        this.nov9Y2001 = DayDate.createInstance(9, MonthConstants.NOVEMBER, 2001);
+        this.nov9Y2001 = DayDateFactory.makeDate(9, DayDate.Month.NOVEMBER, 2001);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DayDateTest extends TestCase {
      */
     public void testAddMonthsTo9Nov2001() {
         final DayDate jan9Y2002 = DayDate.addMonths(2, this.nov9Y2001);
-        final DayDate answer = DayDate.createInstance(9, 1, 2002);
+        final DayDate answer = DayDateFactory.makeDate(9, 1, 2002);
         assertEquals(answer, jan9Y2002);
     }
 
@@ -105,58 +105,20 @@ public class DayDateTest extends TestCase {
      * A test case for a reported bug, now fixed.
      */
     public void testAddMonthsTo5Oct2003() {
-        final DayDate d1 = DayDate.createInstance(5, MonthConstants.OCTOBER, 2003);
+        final DayDate d1 = DayDateFactory.makeDate(5, MonthConstants.OCTOBER, 2003);
         final DayDate d2 = DayDate.addMonths(2, d1);
-        assertEquals(d2, DayDate.createInstance(5, MonthConstants.DECEMBER, 2003));
+        assertEquals(d2, DayDateFactory.makeDate(5, MonthConstants.DECEMBER, 2003));
     }
 
     /**
      * A test case for a reported bug, now fixed.
      */
     public void testAddMonthsTo1Jan2003() {
-        final DayDate d1 = DayDate.createInstance(1, MonthConstants.JANUARY, 2003);
+        final DayDate d1 = DayDateFactory.makeDate(1, MonthConstants.JANUARY, 2003);
         final DayDate d2 = DayDate.addMonths(0, d1);
         assertEquals(d2, d1);
     }
 
-    /**
-     * Problem that the conversion of days to strings returns the right result.  Actually, this 
-     * result depends on the Locale so this test needs to be modified.
-     */
-    public void testWeekdayCodeToString() {
-
-        assertEquals("Monday", DayDate.weekdayCodeToString(DayDate.MONDAY));
-        assertEquals("Tuesday", DayDate.weekdayCodeToString(DayDate.TUESDAY));
-        assertEquals("Wednesday", DayDate.weekdayCodeToString(DayDate.WEDNESDAY));
-        assertEquals("Thursday", DayDate.weekdayCodeToString(DayDate.THURSDAY));
-        assertEquals("Friday", DayDate.weekdayCodeToString(DayDate.FRIDAY));
-        assertEquals("Saturday", DayDate.weekdayCodeToString(DayDate.SATURDAY));
-        assertEquals("Sunday", DayDate.weekdayCodeToString(DayDate.SUNDAY));
-    }
-
-    /**
-     * Test the conversion of a string to a weekday.  Note that this test will fail if the 
-     * default locale doesn't use English weekday names...devise a better test!
-     */
-    public void testStringToWeekday() {
-
-        assertEquals(DayDate.MONDAY, DayDate.stringToWeekdayCode("Monday"));
-        assertEquals(DayDate.TUESDAY, DayDate.stringToWeekdayCode("Tuesday"));
-        assertEquals(DayDate.WEDNESDAY, DayDate.stringToWeekdayCode("Wednesday"));
-        assertEquals(DayDate.THURSDAY, DayDate.stringToWeekdayCode("Thursday"));
-        assertEquals(DayDate.FRIDAY, DayDate.stringToWeekdayCode("Friday"));
-        assertEquals(DayDate.SATURDAY, DayDate.stringToWeekdayCode("Saturday"));
-        assertEquals(DayDate.SUNDAY, DayDate.stringToWeekdayCode("Sunday"));
-
-        assertEquals(DayDate.MONDAY, DayDate.stringToWeekdayCode("Mon"));
-        assertEquals(DayDate.TUESDAY, DayDate.stringToWeekdayCode("Tue"));
-        assertEquals(DayDate.WEDNESDAY, DayDate.stringToWeekdayCode("Wed"));
-        assertEquals(DayDate.THURSDAY, DayDate.stringToWeekdayCode("Thu"));
-        assertEquals(DayDate.FRIDAY, DayDate.stringToWeekdayCode("Fri"));
-        assertEquals(DayDate.SATURDAY, DayDate.stringToWeekdayCode("Sat"));
-        assertEquals(DayDate.SUNDAY, DayDate.stringToWeekdayCode("Sun"));
-
-    }
 
     /**
      * Test the conversion of a string to a month.  Note that this test will fail if the default
@@ -276,7 +238,7 @@ public class DayDateTest extends TestCase {
      */
     public void testSerialization() {
 
-        DayDate d1 = DayDate.createInstance(15, 4, 2000);
+        DayDate d1 = DayDateFactory.makeDate(15, 4, 2000);
         DayDate d2 = null;
 
         try {
@@ -300,9 +262,9 @@ public class DayDateTest extends TestCase {
      * A test for bug report 1096282 (now fixed).
      */
     public void test1096282() {
-        DayDate d = DayDate.createInstance(29, 2, 2004);
+        DayDate d = DayDateFactory.makeDate(29, 2, 2004);
         d = DayDate.addYears(1, d);
-        DayDate expected = DayDate.createInstance(28, 2, 2005);
+        DayDate expected = DayDateFactory.makeDate(28, 2, 2005);
         assertTrue(d.isOn(expected));
     }
 
@@ -310,7 +272,7 @@ public class DayDateTest extends TestCase {
      * Miscellaneous tests for the addMonths() method.
      */
     public void testAddMonths() {
-        DayDate d1 = DayDate.createInstance(31, 5, 2004);
+        DayDate d1 = DayDateFactory.makeDate(31, 5, 2004);
         
         DayDate d2 = DayDate.addMonths(1, d1);
         assertEquals(30, d2.getDayOfMonth());
@@ -359,104 +321,104 @@ public class DayDateTest extends TestCase {
 
     public void testGetFollowingDayOfTheWeek() {
 
-        assertEquals(d(25,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(26,11,2019), d(21, 11, 2019).getFollowingDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(27,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(28,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(22,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(23,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(24,11,2019), d(21,11,2019).getFollowingDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(1, 1,2020), d(25,12,2019).getFollowingDayOfWeek(DayDate.WEDNESDAY));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getFollowingDayOfWeek(8,nov9Y2001));
+        assertEquals(d(25,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.MONDAY));
+        assertEquals(d(26,11,2019), d(21, 11, 2019).getFollowingDayOfWeek(Day.TUESDAY));
+        assertEquals(d(27,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(28,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.THURSDAY));
+        assertEquals(d(22,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.FRIDAY));
+        assertEquals(d(23,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.SATURDAY));
+        assertEquals(d(24,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.SUNDAY));
+        assertEquals(d(1, 1,2020), d(25,12,2019).getFollowingDayOfWeek(Day.WEDNESDAY));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getFollowingDayOfWeek(Day.make(8),nov9Y2001));
 
     }
 
     public void testGetNearestDayOfTheWeek(){
 
-        assertEquals(d(24,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(24,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(24,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(24,11,2019), d(27,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(1,12,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(1, 12,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(1, 12, 2019), d(30, 11, 2019).getNearestDayOfWeek(DayDate.SUNDAY));
+        assertEquals(d(24,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(24,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(24,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(24,11,2019), d(27,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(1,12,2019), d(28,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(1, 12,2019), d(29,11,2019).getNearestDayOfWeek(Day.SUNDAY));
+        assertEquals(d(1, 12, 2019), d(30, 11, 2019).getNearestDayOfWeek(Day.SUNDAY));
 
-        assertEquals(d(25,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(25,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(25,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(25, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(25,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(2,12,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(2,12,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.MONDAY));
+        assertEquals(d(25,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(25,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(25,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(25, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(25,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(2,12,2019), d(29,11,2019).getNearestDayOfWeek(Day.MONDAY));
+        assertEquals(d(2,12,2019), d(30,11,2019).getNearestDayOfWeek(Day.MONDAY));
 
-        assertEquals(d(26,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(26,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(26,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(26, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(26,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(26,11,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(3,12,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.TUESDAY));
+        assertEquals(d(26,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(26,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(26,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(26, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(26,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(26,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.TUESDAY));
+        assertEquals(d(3,12,2019), d(30,11,2019).getNearestDayOfWeek(Day.TUESDAY));
 
-        assertEquals(d(27,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27,11,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(27,11,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(27,11,2019), d(30,11,2019).getNearestDayOfWeek(Day.WEDNESDAY));
 
-        assertEquals(d(21,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28,11,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(28,11,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.THURSDAY));
+        assertEquals(d(21,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.THURSDAY));
+        assertEquals(d(28,11,2019), d(30,11,2019).getNearestDayOfWeek(Day.THURSDAY));
 
-        assertEquals(d(22,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(22,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(29,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(29, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(29,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(29,11,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(29,11,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.FRIDAY));
+        assertEquals(d(22,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(22,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(29,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(29, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(29,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(29,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.FRIDAY));
+        assertEquals(d(29,11,2019), d(30,11,2019).getNearestDayOfWeek(Day.FRIDAY));
 
-        assertEquals(d(23,11,2019), d(24,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(23,11,2019), d(25,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(23,11,2019), d(26,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(30, 11, 2019), d(27,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(30,11,2019), d(28,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(30,11,2019), d(29,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
-        assertEquals(d(30,11,2019), d(30,11,2019).getNearestDayOfWeek(DayDate.SATURDAY));
+        assertEquals(d(23,11,2019), d(24,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(23,11,2019), d(25,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(23,11,2019), d(26,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(30, 11, 2019), d(27,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(30,11,2019), d(28,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(30,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.SATURDAY));
+        assertEquals(d(30,11,2019), d(30,11,2019).getNearestDayOfWeek(Day.SATURDAY));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getNearestDayOfWeek(8, nov9Y2001));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getNearestDayOfWeek(Day.make(8), nov9Y2001));
     }
 
     public void testGetEndOfCurrentMonth() {
-        DayDate dayDate = DayDate.createInstance(19,11,2019);
+        DayDate dayDate = DayDateFactory.makeDate(19,11,2019);
         assertEquals(d(30,11,2019), dayDate.getEndOfCurrentMonth(dayDate));
     }
 
-    public void testWeekInMonthToString() {
-        assertEquals("First", DayDate.weekInMonthToString(1));
-        assertEquals("Second", DayDate.weekInMonthToString(2));
-        assertEquals("Third", DayDate.weekInMonthToString(3));
-        assertEquals("Fourth", DayDate.weekInMonthToString(4));
-        assertEquals("Last", DayDate.weekInMonthToString(0));
-        assertEquals("SerialDate.weekInMonthToString(): invalid code.", DayDate.weekInMonthToString(8));
-    }
+    /*public void testWeekInMonthToString() {
+        assertEquals("First", DayDate.WeekInMonth.toString(1));
+        assertEquals("Second", DayDate.WeekInMonth.toString(2));
+        assertEquals("Third", DayDate.WeekInMonth.toString(3));
+        assertEquals("Fourth", DayDate.WeekInMonth.toString(4));
+        assertEquals("Last", DayDate.WeekInMonth.toString(0));
+        assertEquals("SerialDate.weekInMonthToString(): invalid code.", DayDate.WeekInMonth.toString(8));
+    }*/
 
 
     public void testGetPreviousDayOfTheWeek() {
 
-        assertEquals(d(17,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.SUNDAY));
-        assertEquals(d(18,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.MONDAY));
-        assertEquals(d(19, 11, 2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.TUESDAY));
-        assertEquals(d(20,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.WEDNESDAY));
-        assertEquals(d(14,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.THURSDAY));
-        assertEquals(d(15,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.FRIDAY));
-        assertEquals(d(16,11,2019), d(21,11,2019).getPreviousDayOfWeek(DayDate.SATURDAY));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getPreviousDayOfWeek(8,nov9Y2001));
+        assertEquals(d(17,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.SUNDAY));
+        assertEquals(d(18,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.MONDAY));
+        assertEquals(d(19, 11, 2019), d(21,11,2019).getPreviousDayOfWeek(Day.TUESDAY));
+        assertEquals(d(20,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.WEDNESDAY));
+        assertEquals(d(14,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.THURSDAY));
+        assertEquals(d(15,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.FRIDAY));
+        assertEquals(d(16,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.SATURDAY));
+
     }
 
     public void testGetMonths() {
@@ -483,19 +445,11 @@ public class DayDateTest extends TestCase {
     }
 
     public void testCreateInstance() {
-        assertEquals(d(21,11,2019), DayDate.createInstance(new GregorianCalendar(2019, Calendar.NOVEMBER,21).getTime()));
-    }
-
-    public void testDescription() {
-
-        DayDate date = DayDate.createInstance(21,11,2019);
-        date.setDescription("Date of current test");
-
-        assertEquals("Date of current test", date.getDescription());
+        assertEquals(d(21,11,2019), DayDateFactory.makeDate(new GregorianCalendar(2019, Calendar.NOVEMBER,21).getTime()));
     }
 
     public void testToString() {
-        DayDate date = DayDate.createInstance(21,11,2019);
+        DayDate date = DayDateFactory.makeDate(21,11,2019);
         assertEquals("21-November-2019", date.toString());
     }
 

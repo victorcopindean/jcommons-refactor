@@ -98,9 +98,29 @@ public class SpreadsheetDate extends DayDate {
     /** The year (1900 to 9999). */
     private final int year;
 
-    public static final int EARLIEST_DATE_ORDINAL = 2;   // 1/1/1900
+    private static final int EARLIEST_DATE_ORDINAL = 2;   // 1/1/1900
 
-    public static final int LATEST_ORDINAL_DATE = 2958465; // 31/12/9999
+    private static final int LATEST_ORDINAL_DATE = 2958465; // 31/12/9999
+
+    static final int MINIMUM_YEAR_SUPPORTED = 1900;
+
+    static final int MAXIMUM_YEAR_SUPPORTED = 9999;
+
+    private static final int[] AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH =
+            {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
+    private static final int[]
+            LEAP_YEAR_AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH =
+            {0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366};
+
+    public static String getDescription() {
+        return description;
+    }
+
+    public static void setDescription(String description) {
+        SpreadsheetDate.description = description;
+    }
+
+    private static String description;
 
     /**
      * Creates a new date instance.
@@ -452,7 +472,7 @@ public class SpreadsheetDate extends DayDate {
      */
     private int calcSerial(final int d, final int m, final int y) {
         final int yy = ((y - 1900) * 365) + DayDate.leapYearCount(y - 1);
-        int mm = DayDate.AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH[m];
+        int mm = AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH[m];
         if (m > MonthConstants.FEBRUARY) {
             if (DayDate.isLeapYear(y)) {
                 mm = mm + 1;

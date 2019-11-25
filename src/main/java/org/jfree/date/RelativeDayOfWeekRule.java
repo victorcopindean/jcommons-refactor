@@ -70,7 +70,7 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
      * Default constructor - builds a rule for the Monday following 1 January.
      */
     public RelativeDayOfWeekRule() {
-        this(new DayAndMonthRule(), DayDate.MONDAY, DayDate.FOLLOWING);
+        this(new DayAndMonthRule(), 1, DayDate.FOLLOWING);
     }
 
     /**
@@ -174,8 +174,8 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
     public DayDate getDate(final int year) {
 
         // check argument...
-        if ((year < DayDate.MINIMUM_YEAR_SUPPORTED)
-            || (year > DayDate.MAXIMUM_YEAR_SUPPORTED)) {
+        if ((year < SpreadsheetDate.MINIMUM_YEAR_SUPPORTED)
+            || (year > SpreadsheetDate.MAXIMUM_YEAR_SUPPORTED)) {
             throw new IllegalArgumentException(
                 "RelativeDayOfWeekRule.getDate(): year outside valid range.");
         }
@@ -187,15 +187,15 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
         if (base != null) {
             switch (this.relative) {
                 case(DayDate.PRECEDING):
-                    result = DayDate.getPreviousDayOfWeek(this.dayOfWeek,
+                    result = DayDate.getPreviousDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;
                 case(DayDate.NEAREST):
-                    result = DayDate.getNearestDayOfWeek(this.dayOfWeek,
+                    result = DayDate.getNearestDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;
                 case(DayDate.FOLLOWING):
-                    result = DayDate.getFollowingDayOfWeek(this.dayOfWeek,
+                    result = DayDate.getFollowingDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;
                 default:

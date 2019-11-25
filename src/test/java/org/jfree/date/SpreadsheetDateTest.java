@@ -98,7 +98,7 @@ public class SpreadsheetDateTest extends TestCase {
      */
     public void test1Jan1900GetDayOfWeek() {
         final int dayOfWeek = this.jan1Y1900.getDayOfWeek();
-        assertEquals(DayDate.MONDAY, dayOfWeek);
+        assertEquals(Day.MONDAY.index, dayOfWeek);
     }
 
     /**
@@ -108,7 +108,7 @@ public class SpreadsheetDateTest extends TestCase {
         DayDate nov12Y2001 = new SpreadsheetDate(12,
                 MonthConstants.NOVEMBER, 2001);
         int dayOfWeek = nov12Y2001.getDayOfWeek();
-        assertEquals(DayDate.MONDAY, dayOfWeek);
+        assertEquals(Day.MONDAY.index, dayOfWeek);
     }
 
     /**

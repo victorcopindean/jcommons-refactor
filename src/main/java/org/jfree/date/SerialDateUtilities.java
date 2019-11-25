@@ -113,25 +113,25 @@ public class SerialDateUtilities {
     public int stringToWeekday(final String s) {
 
         if (s.equals(this.weekdays[Calendar.SATURDAY])) {
-            return DayDate.SATURDAY;
+            return Day.SATURDAY.index;
         }
         else if (s.equals(this.weekdays[Calendar.SUNDAY])) {
-            return DayDate.SUNDAY;
+            return Day.SUNDAY.index;
         }
         else if (s.equals(this.weekdays[Calendar.MONDAY])) {
-            return DayDate.MONDAY;
+            return Day.MONDAY.index;
         }
         else if (s.equals(this.weekdays[Calendar.TUESDAY])) {
-            return DayDate.TUESDAY;
+            return Day.TUESDAY.index;
         }
         else if (s.equals(this.weekdays[Calendar.WEDNESDAY])) {
-            return DayDate.WEDNESDAY;
+            return Day.WEDNESDAY.index;
         }
         else if (s.equals(this.weekdays[Calendar.THURSDAY])) {
-            return DayDate.THURSDAY;
+            return Day.THURSDAY.index;
         }
         else {
-            return DayDate.FRIDAY;
+            return Day.FRIDAY.index;
         }
 
     }
@@ -372,7 +372,7 @@ public class SerialDateUtilities {
             y2 = end.getYYYY();
             for (year = y1; year == y2; year++) {
                 if (DayDate.isLeapYear(year)) {
-                    feb29 = DayDate.createInstance(29, MonthConstants.FEBRUARY, year);
+                    feb29 = DayDateFactory.makeDate(29, MonthConstants.FEBRUARY, year);
                     if (feb29.isInRange(start, end, DayDate.INCLUDE_SECOND)) {
                         count++;
                     }
