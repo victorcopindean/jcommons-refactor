@@ -89,7 +89,7 @@ public class DayDateTest extends TestCase {
      * Problem set up.
      */
     protected void setUp() {
-        this.nov9Y2001 = DayDateFactory.makeDate(9, DayDate.Month.NOVEMBER, 2001);
+        this.nov9Y2001 = DayDateFactory.makeDate(9, Month.NOVEMBER.index, 2001);
     }
 
     /**
@@ -119,70 +119,6 @@ public class DayDateTest extends TestCase {
         assertEquals(d2, d1);
     }
 
-
-    /**
-     * Test the conversion of a string to a month.  Note that this test will fail if the default
-     * locale doesn't use English month names...devise a better test!
-     */
-    public void testStringToMonthCode() {
-
-        assertEquals(MonthConstants.JANUARY, DayDate.stringToMonthCode("January"));
-        assertEquals(MonthConstants.FEBRUARY, DayDate.stringToMonthCode("February"));
-        assertEquals(MonthConstants.MARCH, DayDate.stringToMonthCode("March"));
-        assertEquals(MonthConstants.APRIL, DayDate.stringToMonthCode("April"));
-        assertEquals(MonthConstants.MAY, DayDate.stringToMonthCode("May"));
-        assertEquals(MonthConstants.JUNE, DayDate.stringToMonthCode("June"));
-        assertEquals(MonthConstants.JULY, DayDate.stringToMonthCode("July"));
-        assertEquals(MonthConstants.AUGUST, DayDate.stringToMonthCode("August"));
-        assertEquals(MonthConstants.SEPTEMBER, DayDate.stringToMonthCode("September"));
-        assertEquals(MonthConstants.OCTOBER, DayDate.stringToMonthCode("October"));
-        assertEquals(MonthConstants.NOVEMBER, DayDate.stringToMonthCode("November"));
-        assertEquals(MonthConstants.DECEMBER, DayDate.stringToMonthCode("December"));
-
-        assertEquals(MonthConstants.JANUARY, DayDate.stringToMonthCode("Jan"));
-        assertEquals(MonthConstants.FEBRUARY, DayDate.stringToMonthCode("Feb"));
-        assertEquals(MonthConstants.MARCH, DayDate.stringToMonthCode("Mar"));
-        assertEquals(MonthConstants.APRIL, DayDate.stringToMonthCode("Apr"));
-        assertEquals(MonthConstants.MAY, DayDate.stringToMonthCode("May"));
-        assertEquals(MonthConstants.JUNE, DayDate.stringToMonthCode("Jun"));
-        assertEquals(MonthConstants.JULY, DayDate.stringToMonthCode("Jul"));
-        assertEquals(MonthConstants.AUGUST, DayDate.stringToMonthCode("Aug"));
-        assertEquals(MonthConstants.SEPTEMBER, DayDate.stringToMonthCode("Sep"));
-        assertEquals(MonthConstants.OCTOBER, DayDate.stringToMonthCode("Oct"));
-        assertEquals(MonthConstants.NOVEMBER, DayDate.stringToMonthCode("Nov"));
-        assertEquals(MonthConstants.DECEMBER, DayDate.stringToMonthCode("Dec"));
-    }
-
-    public void testMonthCodeToString() {
-
-        assertEquals("January", DayDate.monthCodeToString(DayDate.Month.JANUARY));
-        assertEquals("February", DayDate.monthCodeToString(DayDate.Month.FEBRUARY));
-        assertEquals("March", DayDate.monthCodeToString(DayDate.Month.MARCH));
-        assertEquals("April", DayDate.monthCodeToString(DayDate.Month.APRIL));
-        assertEquals("May", DayDate.monthCodeToString(DayDate.Month.MAY));
-        assertEquals("June", DayDate.monthCodeToString(DayDate.Month.JUNE));
-        assertEquals("July", DayDate.monthCodeToString(DayDate.Month.JULY));
-        assertEquals("August", DayDate.monthCodeToString(DayDate.Month.AUGUST));
-        assertEquals("September", DayDate.monthCodeToString(DayDate.Month.SEPTEMBER));
-        assertEquals("October", DayDate.monthCodeToString(DayDate.Month.OCTOBER));
-        assertEquals("November", DayDate.monthCodeToString(DayDate.Month.NOVEMBER));
-        assertEquals("December", DayDate.monthCodeToString(DayDate.Month.DECEMBER));
-    }
-
-    public void testMonthCodeToStringShort() {
-        assertEquals("Jan", DayDate.monthCodeToStringShort(DayDate.Month.JANUARY));
-        assertEquals("Feb", DayDate.monthCodeToStringShort(DayDate.Month.FEBRUARY));
-        assertEquals("Mar", DayDate.monthCodeToStringShort(DayDate.Month.MARCH));
-        assertEquals("Apr", DayDate.monthCodeToStringShort(DayDate.Month.APRIL));
-        assertEquals("May", DayDate.monthCodeToStringShort(DayDate.Month.MAY));
-        assertEquals("Jun", DayDate.monthCodeToStringShort(DayDate.Month.JUNE));
-        assertEquals("Jul", DayDate.monthCodeToStringShort(DayDate.Month.JULY));
-        assertEquals("Aug", DayDate.monthCodeToStringShort(DayDate.Month.AUGUST));
-        assertEquals("Sep", DayDate.monthCodeToStringShort(DayDate.Month.SEPTEMBER));
-        assertEquals("Oct", DayDate.monthCodeToStringShort(DayDate.Month.OCTOBER));
-        assertEquals("Nov", DayDate.monthCodeToStringShort(DayDate.Month.NOVEMBER));
-        assertEquals("Dec", DayDate.monthCodeToStringShort(DayDate.Month.DECEMBER));
-    }
 
     /**
      * 1900 is not a leap year.
@@ -290,29 +226,19 @@ public class DayDateTest extends TestCase {
         assertEquals(2004, d4.getYYYY());
     }
 
-    public void testIsValidWeekInMonthCode() {
-        for(int i=0; i<= 4; i++){
-            assertTrue(DayDate.isValidWeekInMonthCode(i));
-        }
-        assertFalse(DayDate.isValidWeekInMonthCode(5));
-    }
-
-
     public void testMonthCodeToQuarter() {
-        assertEquals(1, DayDate.monthCodeToQuarter(DayDate.Month.make(1)));
-        assertEquals(1, DayDate.monthCodeToQuarter(DayDate.Month.make(2)));
-        assertEquals(1, DayDate.monthCodeToQuarter(DayDate.Month.make(3)));
-        assertEquals(2, DayDate.monthCodeToQuarter(DayDate.Month.make(4)));
-        assertEquals(2, DayDate.monthCodeToQuarter(DayDate.Month.make(5)));
-        assertEquals(2, DayDate.monthCodeToQuarter(DayDate.Month.make(6)));
-        assertEquals(3, DayDate.monthCodeToQuarter(DayDate.Month.make(7)));
-        assertEquals(3, DayDate.monthCodeToQuarter(DayDate.Month.make(8)));
-        assertEquals(3, DayDate.monthCodeToQuarter(DayDate.Month.make(9)));
-        assertEquals(4, DayDate.monthCodeToQuarter(DayDate.Month.make(10)));
-        assertEquals(4, DayDate.monthCodeToQuarter(DayDate.Month.make(11)));
-        assertEquals(4, DayDate.monthCodeToQuarter(DayDate.Month.make(12)));
-        Assertions.assertThrows(IllegalArgumentException.class, () ->
-                DayDate.monthCodeToQuarter(DayDate.Month.make(14)));
+        assertEquals(1, Month.make(1).quarter());
+        assertEquals(1, Month.make(2).quarter());
+        assertEquals(1, Month.make(3).quarter());
+        assertEquals(2, Month.make(4).quarter());
+        assertEquals(2, Month.make(5).quarter());
+        assertEquals(2, Month.make(6).quarter());
+        assertEquals(3, Month.make(7).quarter());
+        assertEquals(3, Month.make(8).quarter());
+        assertEquals(3, Month.make(9).quarter());
+        assertEquals(4, Month.make(10).quarter());
+        assertEquals(4, Month.make(11).quarter());
+        assertEquals(4, Month.make(12).quarter());
     }
 
     private static SpreadsheetDate d(int day, int month, int year){
@@ -422,28 +348,20 @@ public class DayDateTest extends TestCase {
     }
 
     public void testGetMonths() {
-        String[] monthNames = DayDate.getMonths();
+        String[] monthNames = Month.getMonthNames();
         String[] monthNamesExpected = {"January", "February", "March", "April", "May", "June", "July", "August", "September",
           "October", "November" , "December" , ""};
         assertEquals(monthNamesExpected.length, monthNames.length);
         assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
     }
 
-    public void testGetMonthsShortened() {
-        String[] monthNames = DayDate.getMonths(true);
-        String[] monthNamesExpected = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                "Oct", "Nov" , "Dec" , ""};
-        assertEquals(monthNamesExpected.length, monthNames.length);
-        assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
-    }
+    public void testWeekDayRangeToString(){
 
-    public void testRelativeToString() {
-        assertEquals("Preceding", DayDate.relativeToString(DayDate.PRECEDING));
-        assertEquals("Nearest", DayDate.relativeToString(DayDate.NEAREST));
-        assertEquals("Following", DayDate.relativeToString(DayDate.FOLLOWING));
-        assertEquals("ERROR : Relative To String", DayDate.relativeToString(3));
-    }
+        assertEquals("Preceding", DayDate.WeekdayRange.PRECEDING.toString());
+        assertEquals("Nearest", DayDate.WeekdayRange.NEAREST.toString());
+        assertEquals("Following", DayDate.WeekdayRange.FOLLOWING.toString());
 
+    }
     public void testCreateInstance() {
         assertEquals(d(21,11,2019), DayDateFactory.makeDate(new GregorianCalendar(2019, Calendar.NOVEMBER,21).getTime()));
     }

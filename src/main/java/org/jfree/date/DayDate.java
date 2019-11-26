@@ -40,7 +40,6 @@ package org.jfree.date;
 
 import java.io.Serializable;
 import java.text.*;
-import java.util.*;
 
 /**
  * <pre>
@@ -65,19 +64,10 @@ public abstract class DayDate implements Comparable,
                                             {
 
     private static final DateFormatSymbols
-        DATE_FORMAT_SYMBOLS = new SimpleDateFormat().getDateFormatSymbols();
+            dateFormatSymbols = new DateFormatSymbols();
 
     static final int[] LAST_DAY_OF_MONTH =
         {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    /** Useful range constant. */
-    public static final int INCLUDE_FIRST = 1;
-
-    /** Useful range constant. */
-    public static final int INCLUDE_SECOND = 2;
-
-    /** Useful range constant. */
-    public static final int INCLUDE_BOTH = 3;
 
     public enum DateInterval{
         CLOSED(0), CLOSED_LEFT(1), CLOSED_RIGHT(2), OPEN(3);
@@ -90,16 +80,6 @@ public abstract class DayDate implements Comparable,
 
     }
 
-    /** 
-     * Useful constants for specifying a day of the week relative to a fixed
-     * date. 
-     */
-    public static final int PRECEDING = -1;
-
-    public static final int NEAREST = 0;
-
-    public static final int FOLLOWING = 1;
-
     public enum WeekdayRange {
         PRECEDING(-1), NEAREST(0), FOLLOWING(1);
 
@@ -108,34 +88,17 @@ public abstract class DayDate implements Comparable,
         WeekdayRange(int index) {
             this.index = index;
         }
-    }
 
-    public enum Month {
-        JANUARY(1),
-        FEBRUARY(2),
-        MARCH(3),
-        APRIL(4),
-        MAY(5),
-        JUNE(6),
-        JULY(7),
-        AUGUST(8),
-        SEPTEMBER(9),
-        OCTOBER(10),
-        NOVEMBER(11),
-        DECEMBER(12);
 
-        Month(int index) {
-            this.index = index;
-        }
-
-        public static Month make(int monthIndex) {
-            for(Month m : Month.values()) {
-                if (m.index == monthIndex)
-                    return m;
+        @Override
+        public String toString() {
+            switch(this) {
+                case PRECEDING : return "Preceding";
+                case NEAREST : return "Nearest";
+                case FOLLOWING: return "Following";
+                default : return "ERROR : Relative To String";
             }
-            throw new IllegalArgumentException("Invalid month index " + monthIndex);
         }
-        public final int index;
     }
 
     public enum WeekInMonth {
@@ -147,159 +110,6 @@ public abstract class DayDate implements Comparable,
             this.index = index;
         }
     }
-
-
-                                                /**
-     * Returns an array of month names. Returns size 13 array instead of 12. Should be modified.
-     *
-     * @return an array of month names.
-     */
-    public static String[] getMonths() {
-
-        return getMonths(false);
-
-    }
-
-    /**
-     * Returns an array of month names. Returns size 13 array instead of 12. Should be modified.
-     *
-     * @param shortened  a flag indicating that shortened month names should 
-     *                   be returned.
-     *
-     * @return an array of month names.
-     */
-    public static String[] getMonths(final boolean shortened) {
-
-        if (shortened) {
-            return DATE_FORMAT_SYMBOLS.getShortMonths();
-        }
-        else {
-            return DATE_FORMAT_SYMBOLS.getMonths();
-        }
-
-    }
-
-    /**
-     * Returns the quarter for the specified month.
-     *
-     * @param month  the month code (1-12).
-     *
-     * @return the quarter that the month belongs to.
-     */
-    public static int monthCodeToQuarter(Month month) {
-
-        switch(month) {
-            case JANUARY: 
-            case FEBRUARY: 
-            case MARCH: return 1;
-            case APRIL: 
-            case MAY: 
-            case JUNE: return 2;
-            case JULY: 
-            case AUGUST: 
-            case SEPTEMBER: return 3;
-            case OCTOBER: 
-            case NOVEMBER: 
-            case DECEMBER: return 4;
-            default: throw new IllegalArgumentException(
-                "SerialDate.monthCodeToQuarter: invalid month code.");
-        }
-    }
-
-    /**
-     * Returns a string representing the supplied month.
-     * <P>
-     * The string returned is the long form of the month name taken from the 
-     * default locale.
-     *
-     * @param month  the month.
-     *
-     * @return a string representing the supplied month.
-     */
-    public static String monthCodeToString(Month month) {
-
-        return DATE_FORMAT_SYMBOLS.getMonths()[month.index - 1];
-
-    }
-
-    /**
-     * Returns a string representing the supplied month.
-     * <P>
-     * The string returned is the short form of the month name taken
-     * from the default locale.
-     *
-     * @param month  the month.
-     *
-     * @return a string representing the supplied month.
-     */
-    public static String monthCodeToStringShort(Month month) {
-
-           return DATE_FORMAT_SYMBOLS.getShortMonths()[month.index - 1];
-
-    }
-
-    /**
-     * Converts a string to a month code.
-     * <P>
-     * This method will return one of the constants JANUARY, FEBRUARY, ..., 
-     * DECEMBER that corresponds to the string.  If the string is not 
-     * recognised, this method returns -1.
-     *
-     * @param s  the string to parse.
-     *
-     * @return <code>-1</code> if the string is not parseable, the month of the
-     *         year otherwise.
-     */
-    public static int stringToMonthCode(String s) {
-
-        final String[] shortMonthNames = DATE_FORMAT_SYMBOLS.getShortMonths();
-        final String[] monthNames = DATE_FORMAT_SYMBOLS.getMonths();
-
-        int result = -1;
-        s = s.trim();
-
-        // first try parsing the string as an integer (1-12)...
-        try {
-            result = Integer.parseInt(s);
-        }
-        catch (NumberFormatException e) {
-            // suppress
-        }
-
-        // now search through the month names...
-        if ((result < 1) || (result > 12)) {
-            for (int i = 0; i < monthNames.length; i++) {
-                if (s.equals(shortMonthNames[i])) {
-                    result = i + 1;
-                    break;
-                }
-                if (s.equals(monthNames[i])) {
-                    result = i + 1;
-                    break;
-                }
-            }
-        }
-
-        return result;
-
-    }
-
-    /**
-     * Returns true if the supplied integer code represents a valid 
-     * week-in-the-month, and false otherwise.
-     *
-     * @param code  the code being checked for validity.
-     * @return <code>true</code> if the supplied integer code represents a 
-     *         valid week-in-the-month.
-     */
-    public static boolean isValidWeekInMonthCode(final int code) {
-
-        for(WeekInMonth w : WeekInMonth.values()) {
-            if(code == w.index) return true;
-        }
-        return false;
-    }
-
 
     /**
      * Determines whether or not the specified year is a leap year.
@@ -521,35 +331,7 @@ public abstract class DayDate implements Comparable,
         return DayDateFactory.makeDate(last, base.getMonth(), base.getYYYY());
     }
 
-    /**
-     * Returns a string corresponding to the week-in-the-month code.
-     * <P>
-     * Need to find a better approach.
-     *
-     * @param count  an integer code representing the week-in-the-month.
-     *
-     * @return a string corresponding to the week-in-the-month code.
-     */
 
-
-    /**
-     * Returns a string representing the supplied 'relative'.
-     * <P>
-     * Need to find a better approach.
-     *
-     * @param relative  a constant representing the 'relative'.
-     *
-     * @return a string representing the supplied 'relative'.
-     */
-    public static String relativeToString(final int relative) {
-
-        switch (relative) {
-            case DayDate.PRECEDING : return "Preceding";
-            case DayDate.NEAREST : return "Nearest";
-            case DayDate.FOLLOWING : return "Following";
-            default : return "ERROR : Relative To String";
-        }
-    }
 
     /**
      * Returns the serial number for the date, where 1 January 1900 = 2 (this
@@ -575,7 +357,7 @@ public abstract class DayDate implements Comparable,
      * @return  a string representation of the date.
      */
    public String toString() {
-        return getDayOfMonth() + "-" + DayDate.monthCodeToString(DayDate.Month.make(this.getMonth()))
+        return getDayOfMonth() + "-" + getMonth()
                                + "-" + getYYYY();
     }
 

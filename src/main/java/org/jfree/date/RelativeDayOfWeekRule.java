@@ -64,13 +64,13 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
     private int dayOfWeek;
 
     /** Specifies which day of the week (PRECEDING, NEAREST or FOLLOWING). */
-    private int relative;
+    private DayDate.WeekdayRange relative;
 
     /**
      * Default constructor - builds a rule for the Monday following 1 January.
      */
     public RelativeDayOfWeekRule() {
-        this(new DayAndMonthRule(), 1, DayDate.FOLLOWING);
+        this(new DayAndMonthRule(), 1, DayDate.WeekdayRange.FOLLOWING);
     }
 
     /**
@@ -82,7 +82,7 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
      *                  or following).
      */
     public RelativeDayOfWeekRule(final AnnualDateRule subrule, 
-            final int dayOfWeek, final int relative) {
+            final int dayOfWeek, DayDate.WeekdayRange relative) {
         this.subrule = subrule;
         this.dayOfWeek = dayOfWeek;
         this.relative = relative;
@@ -134,7 +134,7 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
      *
      * @return The 'relative' attribute.
      */
-    public int getRelative() {
+    public DayDate.WeekdayRange getRelative() {
         return this.relative;
     }
 
@@ -145,7 +145,7 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
      * @param relative  determines *which* day-of-the-week is selected by this 
      *                  rule.
      */
-    public void setRelative(final int relative) {
+    public void setRelative(DayDate.WeekdayRange relative) {
         this.relative = relative;
     }
 
@@ -186,15 +186,15 @@ public class RelativeDayOfWeekRule extends AnnualDateRule {
 
         if (base != null) {
             switch (this.relative) {
-                case(DayDate.PRECEDING):
+                case PRECEDING:
                     result = DayDate.getPreviousDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;
-                case(DayDate.NEAREST):
+                case NEAREST:
                     result = DayDate.getNearestDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;
-                case(DayDate.FOLLOWING):
+                case FOLLOWING:
                     result = DayDate.getFollowingDayOfWeek(Day.make(this.dayOfWeek),
                             base);
                     break;

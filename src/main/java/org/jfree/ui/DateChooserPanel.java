@@ -66,6 +66,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import org.jfree.date.DayDate;
+import org.jfree.date.Month;
 
 /**
  * A panel that allows the user to select a date.
@@ -420,7 +421,7 @@ public class DateChooserPanel extends JPanel implements ActionListener {
         final int minMonth = this.chosenDate.getMinimum(Calendar.MONTH);
         final int maxMonth = this.chosenDate.getMaximum(Calendar.MONTH);
         final String[] months = new String[maxMonth - minMonth + 1];
-        System.arraycopy(DayDate.getMonths(), minMonth, months, 0,
+        System.arraycopy(Month.getMonthNames(), minMonth, months, 0,
                 months.length);
 
         this.monthSelector = new JComboBox(months);

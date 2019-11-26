@@ -64,6 +64,7 @@ public class DatePackageTests extends TestCase {
         suite.addTestSuite(DayDateUtilitiesTest.class);
         suite.addTestSuite(SpreadsheetDateTest.class);
         suite.addTestSuite(DayTest.class);
+        suite.addTestSuite(MonthTest.class);
         return suite;
     }
 
