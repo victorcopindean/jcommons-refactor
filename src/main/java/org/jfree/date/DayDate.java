@@ -40,6 +40,8 @@ package org.jfree.date;
 
 import java.io.Serializable;
 import java.text.*;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * <pre>
@@ -65,9 +67,6 @@ public abstract class DayDate implements Comparable,
 
     private static final DateFormatSymbols
             dateFormatSymbols = new DateFormatSymbols();
-
-    static final int[] LAST_DAY_OF_MONTH =
-        {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     public enum DateInterval{
         CLOSED(0), CLOSED_LEFT(1), CLOSED_RIGHT(2), OPEN(3);
@@ -114,68 +113,33 @@ public abstract class DayDate implements Comparable,
     /**
      * Determines whether or not the specified year is a leap year.
      *
-     * @param yyyy  the year (in the range 1900 to 9999).
+     * @param year  the year (in the range 1900 to 9999).
      *
      * @return <code>true</code> if the specified year is a leap year.
      */
-    public static boolean isLeapYear(final int yyyy) {
+    public static boolean isLeapYear(final int year) {
+        boolean fourth = year % 4 == 0;
+        boolean hundredth = year % 100 == 0;
+        boolean fourHundredth = year % 400 == 0;
 
-        if ((yyyy % 4) != 0) {
-            return false;
-        }
-        else if ((yyyy % 400) == 0) {
-            return true;
-        }
-        else if ((yyyy % 100) == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return fourth && (!hundredth || fourHundredth);
 
     }
-
-    /**
-     * Returns the number of leap years from 1900 to the specified year 
-     * INCLUSIVE.
-     * <P>
-     * Note that 1900 is not a leap year.
-     *
-     * @param yyyy  the year (in the range 1900 to 9999).
-     *
-     * @return the number of leap years from 1900 to the specified year.
-     */
-    public static int leapYearCount(final int yyyy) {
-
-        final int leap4 = (yyyy - 1896) / 4;
-        final int leap100 = (yyyy - 1800) / 100;
-        final int leap400 = (yyyy - 1600) / 400;
-        return leap4 - leap100 + leap400;
-
-    }
-
     /**
      * Returns the number of the last day of the month, taking into account 
      * leap years.
      *
      * @param month  the month.
-     * @param yyyy  the year (in the range 1900 to 9999).
+     * @param year  the year (in the range 1900 to 9999).
      *
      * @return the number of the last day of the month.
      */
-    public static int lastDayOfMonth(Month month, final int yyyy) {
+    public static int lastDayOfMonth(Month month, final int year) {
 
-        final int result = LAST_DAY_OF_MONTH[month.index];
-        if (month != Month.FEBRUARY) {
-            return result;
+        if(month == Month.FEBRUARY && isLeapYear(year)) {
+            return month.lastDay() + 1;
         }
-        else if (isLeapYear(yyyy)) {
-            return result + 1;
-        }
-        else {
-            return result;
-        }
-
+        else return month.lastDay();
     }
 
     /**
@@ -183,15 +147,12 @@ public abstract class DayDate implements Comparable,
      * date.
      *
      * @param days  the number of days to add (can be negative).
-     * @param base  the base date.
+
      *
      * @return a new date.
      */
-    public static DayDate addDays(final int days, final DayDate base) {
-
-        final int serialDayNumber = base.toSerial() + days;
-        return DayDateFactory.makeDate(serialDayNumber);
-
+    public DayDate plusDays(int days) {
+        return DayDateFactory.makeDate(getOrdinalDay() + days);
     }
 
     /**
@@ -202,21 +163,18 @@ public abstract class DayDate implements Comparable,
      * may be adjusted slightly:  31 May + 1 month = 30 June.
      *
      * @param months  the number of months to add (can be negative).
-     * @param base  the base date.
      *
      * @return a new date.
      */
-    public static DayDate addMonths(final int months,
-                                    final DayDate base) {
+    public DayDate addMonths(int months) {
 
-        final int yy = (12 * base.getYYYY() + base.getMonth() + months - 1)
-                       / 12;
-        final int mm = (12 * base.getYYYY() + base.getMonth() + months - 1)
-                       % 12 + 1;
-        final int dd = Math.min(
-            base.getDayOfMonth(), DayDate.lastDayOfMonth(Month.make(mm), yy)
-        );
-        return DayDateFactory.makeDate(dd, mm, yy);
+        int thisMonthAsOrdinal = 12 * getYear() + getMonth().index - 1 ;
+        int resultMonthAsOrdinal = thisMonthAsOrdinal + months;
+        int resultYear = resultMonthAsOrdinal / 12 ;
+        Month resultMonth = Month.make(resultMonthAsOrdinal % 12 + 1);
+        int lastDayOfResultMonth = lastDayOfMonth(resultMonth, resultYear);
+        int resultDay = Math.min(getDayOfMonth(), lastDayOfResultMonth);
+        return DayDateFactory.makeDate(resultDay, resultMonth, resultYear);
     }
 
     /**
@@ -224,114 +182,89 @@ public abstract class DayDate implements Comparable,
      * date.
      *
      * @param years  the number of years to add (can be negative).
-     * @param base  the base date.
      *
      * @return A new date.
      */
-    public static DayDate addYears(final int years, final DayDate base) {
+    public DayDate plusYears(int years) {
 
-        final int baseY = base.getYYYY();
-        final int baseM = base.getMonth();
-        final int baseD = base.getDayOfMonth();
-
-        final int targetY = baseY + years;
-        final int targetD = Math.min(
-            baseD, DayDate.lastDayOfMonth(Month.make(baseM), targetY)
-        );
-
-        return DayDateFactory.makeDate(targetD, baseM, targetY);
+        int resultYear = getYear() + years;
+        int lastDayOfResultMonth = lastDayOfMonth(Month.make(getMonth().index), resultYear);
+        int resultDay = Math.min(getDayOfMonth(), lastDayOfResultMonth);
+        return DayDateFactory.makeDate(resultDay, getMonth(), resultYear);
     }
 
     /**
      * Returns the latest date that falls on the specified day-of-the-week and 
      * is BEFORE the base date.
      *
-     * @param targetWeekday  a code for the target day-of-the-week.
-     * @param base  the base date.
+     * @param targetDayOfWeek  a code for the target day-of-the-week.
      *
      * @return the latest date that falls on the specified day-of-the-week and 
      *         is BEFORE the base date.
      */
-    public static DayDate getPreviousDayOfWeek(Day targetWeekday,
-                                               final DayDate base) {
+    public DayDate getPreviousDayOfWeek(Day targetDayOfWeek) {
 
-        final int adjust;
-        final int baseDOW = base.getDayOfWeek();
-        if (baseDOW > targetWeekday.index) {
-            adjust = Math.min(0, targetWeekday.index - baseDOW);
-        }
-        else {
-            adjust = -7 + Math.max(0, targetWeekday.index - baseDOW);
-        }
-
-        return DayDate.addDays(adjust, base);
+        int offsetToTarget = targetDayOfWeek.index - getDayOfWeek().index;
+        if (offsetToTarget >= 0)
+            offsetToTarget = offsetToTarget - 7 ;
+        return plusDays(offsetToTarget);
     }
 
     /**
      * Returns the earliest date that falls on the specified day-of-the-week
      * and is AFTER the base date.
      *
-     * @param targetWeekday  target day of week
-     * @param base  the base date.
+     * @param targetDayOfWeek  target day of week
      *
      * @return the earliest date that falls on the specified day-of-the-week 
      *         and is AFTER the base date.
      */
-    public static DayDate getFollowingDayOfWeek(Day targetWeekday,
-                                                final DayDate base) {
+    public DayDate getFollowingDayOfWeek(Day targetDayOfWeek) {
 
-        // find the date...
-        final int adjust;
-        final int baseDOW = base.getDayOfWeek();
-        if (baseDOW >= targetWeekday.index) {
-            adjust = 7 + Math.min(0, targetWeekday.index - baseDOW);
-        }
-        else {
-            adjust = Math.max(0, targetWeekday.index - baseDOW);
-        }
-
-        return DayDate.addDays(adjust, base);
+        int offsetToTarget = targetDayOfWeek.index - getDayOfWeek().index;
+        if (offsetToTarget <= 0)
+            offsetToTarget = 7 + offsetToTarget;
+        return plusDays(offsetToTarget);
     }
 
     /**
      * Returns the date that falls on the specified day-of-the-week and is
      * CLOSEST to the base date.
      *
-     * @param targetDOW  the target day-of-the-week.
-     * @param base  the base date.
+     * @param targetDayOfWeek  the target day-of-the-week.
      *
      * @return the date that falls on the specified day-of-the-week and is 
      *         CLOSEST to the base date.
      */
-    public static DayDate getNearestDayOfWeek(Day targetDOW,
-                                              final DayDate base) {
+    public DayDate getNearestDayOfWeek(Day targetDayOfWeek) {
 
-        final int baseDOW = base.getDayOfWeek();
-        int adjust = targetDOW.index - baseDOW;
-        if (adjust <= - 4) {
-            adjust = (7 + adjust);
-        }
-        if(adjust >= 4) {
-            adjust = - (7 - adjust);
-        }
-        return DayDate.addDays(adjust, base);
+        int offsetToThisWeeksTarget = targetDayOfWeek.index - getDayOfWeek().index;
+        int offsetToFutureTarget = (offsetToThisWeeksTarget + 7) % 7;
+        int offsetToPreviousTarget = offsetToFutureTarget - 7;
+
+        if(offsetToFutureTarget > 3)
+            return plusDays(offsetToPreviousTarget);
+        else
+            return plusDays(offsetToFutureTarget);
     }
 
     /**
      * Rolls the date forward to the last day of the month.
      *
-     * @param base  the base date.
-     *
      * @return a new serial date.
      */
-    public DayDate getEndOfCurrentMonth(final DayDate base) {
-        final int last = DayDate.lastDayOfMonth(
-            Month.make(base.getMonth()), base.getYYYY()
-        );
-        return DayDateFactory.makeDate(last, base.getMonth(), base.getYYYY());
+    public DayDate getEndOfMonth() {
+        Month month = getMonth();
+        int year = getYear();
+        int lastDay = lastDayOfMonth(month, year);
+        return DayDateFactory.makeDate(lastDay, month, year);
     }
 
-
+    public Date toDate() {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(getYear(), getMonth().index, getDayOfMonth(), 0, 0, 0);
+        return calendar.getTime();
+    }
 
     /**
      * Returns the serial number for the date, where 1 January 1900 = 2 (this
@@ -340,15 +273,7 @@ public abstract class DayDate implements Comparable,
      *
      * @return the serial number for the date.
      */
-    public abstract int toSerial();
-
-    /**
-     * Returns a java.util.Date.  Since java.util.Date has more precision than
-     * SerialDate, we need to define a convention for the 'time of day'.
-     *
-     * @return this as <code>java.util.Date</code>.
-     */
-    public abstract java.util.Date toDate();
+    public abstract int getOrdinalDay();
 
 
     /**
@@ -358,7 +283,7 @@ public abstract class DayDate implements Comparable,
      */
    public String toString() {
         return getDayOfMonth() + "-" + getMonth()
-                               + "-" + getYYYY();
+                               + "-" + getYear();
     }
 
     /**
@@ -366,14 +291,14 @@ public abstract class DayDate implements Comparable,
      *
      * @return the year.
      */
-    public abstract int getYYYY();
+    public abstract int getYear();
 
     /**
      * Returns the month (January = 1, February = 2, March = 3).
      *
      * @return the month of the year.
      */
-    public abstract int getMonth();
+    public abstract Month getMonth();
 
     /**
      * Returns the day of the month.
@@ -387,7 +312,7 @@ public abstract class DayDate implements Comparable,
      *
      * @return the day of the week.
      */
-    public abstract int getDayOfWeek();
+    public abstract Day getDayOfWeek();
 
     /**
      * Returns the difference (in days) between this date and the specified 
@@ -483,42 +408,5 @@ public abstract class DayDate implements Comparable,
      */
     public abstract boolean isInRange(DayDate d1, DayDate d2,
                                       int include);
-
-    /**
-     * Returns the latest date that falls on the specified day-of-the-week and
-     * is BEFORE this date.
-     *
-     * @param targetDOW  a code for the target day-of-the-week.
-     *
-     * @return the latest date that falls on the specified day-of-the-week and
-     *         is BEFORE this date.
-     */
-    public DayDate getPreviousDayOfWeek(Day targetDOW) {
-        return getPreviousDayOfWeek(targetDOW, this);
-    }
-
-    /**
-     * Returns the earliest date that falls on the specified day-of-the-week
-     * and is AFTER this date.
-     *
-     * @param targetDOW  a code for the target day-of-the-week.
-     *
-     * @return the earliest date that falls on the specified day-of-the-week
-     *         and is AFTER this date.
-     */
-    public DayDate getFollowingDayOfWeek(Day targetDOW) {
-        return getFollowingDayOfWeek(targetDOW, this);
-    }
-
-    /**
-     * Returns the nearest date that falls on the specified day-of-the-week.
-     *
-     * @param targetDOW  a code for the target day-of-the-week.
-     *
-     * @return the nearest date that falls on the specified day-of-the-week.
-     */
-    public DayDate getNearestDayOfWeek(Day targetDOW) {
-        return getNearestDayOfWeek(targetDOW, this);
-    }
 
 }

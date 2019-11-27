@@ -183,7 +183,7 @@ public class SpreadsheetDate extends DayDate {
       final int days = this.serial - EARLIEST_DATE_ORDINAL;
       // overestimated because we ignored leap days
       final int overestimatedYYYY = 1900 + (days / 365);
-      final int leaps = DayDate.leapYearCount(overestimatedYYYY);
+      final int leaps = leapYearCount(overestimatedYYYY);
       final int nonleapdays = days - leaps;
       // underestimated because we overestimated years
       int underestimatedYYYY = 1900 + (nonleapdays / 365);
@@ -232,7 +232,7 @@ public class SpreadsheetDate extends DayDate {
      *
      * @return The serial number of this date.
      */
-    public int toSerial() {
+    public int getOrdinalDay() {
         return this.serial;
     }
 
@@ -241,18 +241,13 @@ public class SpreadsheetDate extends DayDate {
      *
      * @return The date.
      */
-    public Date toDate() {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(getYYYY(), getMonth() - 1, getDayOfMonth(), 0, 0, 0);
-        return calendar.getTime();
-    }
 
     /**
      * Returns the year (assume a valid range of 1900 to 9999).
      *
      * @return The year.
      */
-    public int getYYYY() {
+    public int getYear() {
         return this.year;
     }
 
@@ -261,8 +256,8 @@ public class SpreadsheetDate extends DayDate {
      *
      * @return The month of the year.
      */
-    public int getMonth() {
-        return this.month;
+    public Month getMonth() {
+        return Month.make(this.month);
     }
 
     /**
@@ -284,8 +279,8 @@ public class SpreadsheetDate extends DayDate {
      *
      * @return A code representing the day of the week.
      */
-    public int getDayOfWeek() {
-        return (this.serial + 6) % 7 + 1;
+    public Day getDayOfWeek() {
+        return Day.make((this.serial + 6) % 7 + 1);
     }
 
     /**
@@ -303,7 +298,7 @@ public class SpreadsheetDate extends DayDate {
 
         if (object instanceof DayDate) {
             final DayDate s = (DayDate) object;
-            return (s.toSerial() == this.toSerial());
+            return (s.getOrdinalDay() == this.getOrdinalDay());
         }
         else {
             return false;
@@ -317,7 +312,7 @@ public class SpreadsheetDate extends DayDate {
      * @return A hash code.
      */
     public int hashCode() {
-        return toSerial();
+        return getOrdinalDay();
     }
 
     /**
@@ -330,7 +325,7 @@ public class SpreadsheetDate extends DayDate {
      *         'other' date.
      */
     public int compare(final DayDate other) {
-        return this.serial - other.toSerial();
+        return this.serial - other.getOrdinalDay();
     }
 
     /**
@@ -355,7 +350,7 @@ public class SpreadsheetDate extends DayDate {
      *         the specified SerialDate.
      */
     public boolean isOn(final DayDate other) {
-        return (this.serial == other.toSerial());
+        return (this.serial == other.getOrdinalDay());
     }
 
     /**
@@ -368,7 +363,7 @@ public class SpreadsheetDate extends DayDate {
      *         compared to the specified SerialDate.
      */
     public boolean isBefore(final DayDate other) {
-        return (this.serial < other.toSerial());
+        return (this.serial < other.getOrdinalDay());
     }
 
     /**
@@ -381,7 +376,7 @@ public class SpreadsheetDate extends DayDate {
      *         as the specified SerialDate.
      */
     public boolean isOnOrBefore(final DayDate other) {
-        return (this.serial <= other.toSerial());
+        return (this.serial <= other.getOrdinalDay());
     }
 
     /**
@@ -394,7 +389,7 @@ public class SpreadsheetDate extends DayDate {
      *         as the specified SerialDate.
      */
     public boolean isAfter(final DayDate other) {
-        return (this.serial > other.toSerial());
+        return (this.serial > other.getOrdinalDay());
     }
 
     /**
@@ -407,7 +402,7 @@ public class SpreadsheetDate extends DayDate {
      *         the specified SerialDate.
      */
     public boolean isOnOrAfter(final DayDate other) {
-        return (this.serial >= other.toSerial());
+        return (this.serial >= other.getOrdinalDay());
     }
 
     /**
@@ -439,12 +434,12 @@ public class SpreadsheetDate extends DayDate {
      */
     public boolean isInRange(final DayDate d1, final DayDate d2,
                              final int include) {
-        final int s1 = d1.toSerial();
-        final int s2 = d2.toSerial();
+        final int s1 = d1.getOrdinalDay();
+        final int s2 = d2.getOrdinalDay();
         final int start = Math.min(s1, s2);
         final int end = Math.max(s1, s2);
         
-        final int s = toSerial();
+        final int s = getOrdinalDay();
         if (include == DateInterval.OPEN.index) {
             return (s >= start && s <= end);
         }
@@ -471,7 +466,7 @@ public class SpreadsheetDate extends DayDate {
      * @return the serial number from the day, month and year.
      */
     private int calcSerial(final int d, final int m, final int y) {
-        final int yy = ((y - 1900) * 365) + DayDate.leapYearCount(y - 1);
+        final int yy = ((y - 1900) * 365) + leapYearCount(y - 1);
         int mm = AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH[m];
         if (m > MonthConstants.FEBRUARY) {
             if (DayDate.isLeapYear(y)) {
@@ -482,4 +477,22 @@ public class SpreadsheetDate extends DayDate {
         return yy + mm + dd + 1;
     }
 
+    /**
+     * Returns the number of leap years from 1900 to the specified year
+     * INCLUSIVE.
+     * <P>
+     * Note that 1900 is not a leap year.
+     *
+     * @param yyyy  the year (in the range 1900 to 9999).
+     *
+     * @return the number of leap years from 1900 to the specified year.
+     */
+    public static int leapYearCount(final int yyyy) {
+
+        final int leap4 = (yyyy - 1896) / 4;
+        final int leap100 = (yyyy - 1800) / 100;
+        final int leap400 = (yyyy - 1600) / 400;
+        return leap4 - leap100 + leap400;
+
+    }
 }

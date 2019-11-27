@@ -16,6 +16,9 @@ public enum Month {
     NOVEMBER(11),
     DECEMBER(12);
 
+    static final int[] LAST_DAY_OF_MONTH =
+            {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
     Month(int index) {
         this.index = index;
     }
@@ -64,5 +67,9 @@ public enum Month {
         }
         catch (NumberFormatException e) {}
         throw new IllegalArgumentException("Invalid month " + s);
+    }
+
+    public int lastDay() {
+        return LAST_DAY_OF_MONTH[this.index];
     }
 }

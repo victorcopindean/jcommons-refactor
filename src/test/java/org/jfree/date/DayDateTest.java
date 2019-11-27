@@ -56,7 +56,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import junit.framework.*;
-import org.junit.jupiter.api.Assertions;
 
 
 /**
@@ -96,7 +95,9 @@ public class DayDateTest extends TestCase {
      * 9 Nov 2001 plus two months should be 9 Jan 2002.
      */
     public void testAddMonthsTo9Nov2001() {
-        final DayDate jan9Y2002 = DayDate.addMonths(2, this.nov9Y2001);
+
+
+        final DayDate jan9Y2002 = nov9Y2001.addMonths(2);
         final DayDate answer = DayDateFactory.makeDate(9, 1, 2002);
         assertEquals(answer, jan9Y2002);
     }
@@ -106,7 +107,7 @@ public class DayDateTest extends TestCase {
      */
     public void testAddMonthsTo5Oct2003() {
         final DayDate d1 = DayDateFactory.makeDate(5, MonthConstants.OCTOBER, 2003);
-        final DayDate d2 = DayDate.addMonths(2, d1);
+        final DayDate d2 = d1.addMonths(2);
         assertEquals(d2, DayDateFactory.makeDate(5, MonthConstants.DECEMBER, 2003));
     }
 
@@ -115,7 +116,7 @@ public class DayDateTest extends TestCase {
      */
     public void testAddMonthsTo1Jan2003() {
         final DayDate d1 = DayDateFactory.makeDate(1, MonthConstants.JANUARY, 2003);
-        final DayDate d2 = DayDate.addMonths(0, d1);
+        final DayDate d2 = d1.addMonths(0);
         assertEquals(d2, d1);
     }
 
@@ -132,41 +133,6 @@ public class DayDateTest extends TestCase {
      */
     public void testIsLeapYear2000() {
         assertTrue(DayDate.isLeapYear(2000));
-    }
-
-    /**
-     * The number of leap years from 1900 up-to-and-including 1899 is 0.
-     */
-    public void testLeapYearCount1899() {
-        assertEquals(DayDate.leapYearCount(1899), 0);
-    }
-
-    /**
-     * The number of leap years from 1900 up-to-and-including 1903 is 0.
-     */
-    public void testLeapYearCount1903() {
-        assertEquals(DayDate.leapYearCount(1903), 0);
-    }
-
-    /**
-     * The number of leap years from 1900 up-to-and-including 1904 is 1.
-     */
-    public void testLeapYearCount1904() {
-        assertEquals(DayDate.leapYearCount(1904), 1);
-    }
-
-    /**
-     * The number of leap years from 1900 up-to-and-including 1999 is 24.
-     */
-    public void testLeapYearCount1999() {
-        assertEquals(DayDate.leapYearCount(1999), 24);
-    }
-
-    /**
-     * The number of leap years from 1900 up-to-and-including 2000 is 25.
-     */
-    public void testLeapYearCount2000() {
-        assertEquals(DayDate.leapYearCount(2000), 25);
     }
 
     /**
@@ -199,9 +165,8 @@ public class DayDateTest extends TestCase {
      */
     public void test1096282() {
         DayDate d = DayDateFactory.makeDate(29, 2, 2004);
-        d = DayDate.addYears(1, d);
         DayDate expected = DayDateFactory.makeDate(28, 2, 2005);
-        assertTrue(d.isOn(expected));
+        assertEquals(expected, d.plusYears(1));
     }
 
     /**
@@ -210,20 +175,20 @@ public class DayDateTest extends TestCase {
     public void testAddMonths() {
         DayDate d1 = DayDateFactory.makeDate(31, 5, 2004);
         
-        DayDate d2 = DayDate.addMonths(1, d1);
+        DayDate d2 = d1.addMonths(1);
         assertEquals(30, d2.getDayOfMonth());
-        assertEquals(6, d2.getMonth());
-        assertEquals(2004, d2.getYYYY());
+        assertEquals(6, d2.getMonth().index);
+        assertEquals(2004, d2.getYear());
         
-        DayDate d3 = DayDate.addMonths(2, d1);
+        DayDate d3 = d1.addMonths(2);
         assertEquals(31, d3.getDayOfMonth());
-        assertEquals(7, d3.getMonth());
-        assertEquals(2004, d3.getYYYY());
+        assertEquals(7, d3.getMonth().index);
+        assertEquals(2004, d3.getYear());
         
-        DayDate d4 = DayDate.addMonths(1, DayDate.addMonths(1, d1));
+        DayDate d4 = d2.addMonths(1);
         assertEquals(30, d4.getDayOfMonth());
-        assertEquals(7, d4.getMonth());
-        assertEquals(2004, d4.getYYYY());
+        assertEquals(7, d4.getMonth().index);
+        assertEquals(2004, d4.getYear());
     }
 
     public void testMonthCodeToQuarter() {
@@ -255,7 +220,6 @@ public class DayDateTest extends TestCase {
         assertEquals(d(23,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.SATURDAY));
         assertEquals(d(24,11,2019), d(21,11,2019).getFollowingDayOfWeek(Day.SUNDAY));
         assertEquals(d(1, 1,2020), d(25,12,2019).getFollowingDayOfWeek(Day.WEDNESDAY));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getFollowingDayOfWeek(Day.make(8),nov9Y2001));
 
     }
 
@@ -317,12 +281,11 @@ public class DayDateTest extends TestCase {
         assertEquals(d(30,11,2019), d(29,11,2019).getNearestDayOfWeek(Day.SATURDAY));
         assertEquals(d(30,11,2019), d(30,11,2019).getNearestDayOfWeek(Day.SATURDAY));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DayDate.getNearestDayOfWeek(Day.make(8), nov9Y2001));
     }
 
     public void testGetEndOfCurrentMonth() {
         DayDate dayDate = DayDateFactory.makeDate(19,11,2019);
-        assertEquals(d(30,11,2019), dayDate.getEndOfCurrentMonth(dayDate));
+        assertEquals(d(30,11,2019), dayDate.getEndOfMonth());
     }
 
     /*public void testWeekInMonthToString() {
