@@ -113,25 +113,25 @@ public class SerialDateUtilities {
     public int stringToWeekday(final String s) {
 
         if (s.equals(this.weekdays[Calendar.SATURDAY])) {
-            return Day.SATURDAY.index;
+            return Day.SATURDAY.toInt();
         }
         else if (s.equals(this.weekdays[Calendar.SUNDAY])) {
-            return Day.SUNDAY.index;
+            return Day.SUNDAY.toInt();
         }
         else if (s.equals(this.weekdays[Calendar.MONDAY])) {
-            return Day.MONDAY.index;
+            return Day.MONDAY.toInt();
         }
         else if (s.equals(this.weekdays[Calendar.TUESDAY])) {
-            return Day.TUESDAY.index;
+            return Day.TUESDAY.toInt();
         }
         else if (s.equals(this.weekdays[Calendar.WEDNESDAY])) {
-            return Day.WEDNESDAY.index;
+            return Day.WEDNESDAY.toInt();
         }
         else if (s.equals(this.weekdays[Calendar.THURSDAY])) {
-            return Day.THURSDAY.index;
+            return Day.THURSDAY.toInt();
         }
         else {
-            return Day.FRIDAY.index;
+            return Day.FRIDAY.toInt();
         }
 
     }
@@ -145,7 +145,7 @@ public class SerialDateUtilities {
      * @return the number of days between the start date and the end date.
      */
     public static int dayCountActual(final DayDate start, final DayDate end) {
-        return end.compare(start);
+        return end.daysSince(start);
     }
 
     /**
@@ -170,10 +170,10 @@ public class SerialDateUtilities {
         final int y2;
         if (start.isBefore(end)) {  // check the order of the dates
             d1 = start.getDayOfMonth();
-            m1 = start.getMonth().index;
+            m1 = start.getMonth().toInt();
             y1 = start.getYear();
             d2 = end.getDayOfMonth();
-            m2 = end.getMonth().index;
+            m2 = end.getMonth().toInt();
             y2 = end.getYear();
             return 360 * (y2 - y1) + 30 * (m2 - m1) + (d2 - d1);
         }
@@ -206,13 +206,13 @@ public class SerialDateUtilities {
         final int y2;
         if (start.isBefore(end)) {
             d1 = start.getDayOfMonth();
-            m1 = start.getMonth().index;
+            m1 = start.getMonth().toInt();
             y1 = start.getYear();
             if (d1 == 31) {  // first ISDA adjustment
                 d1 = 30;
             }
             d2 = end.getDayOfMonth();
-            m2 = end.getMonth().index;
+            m2 = end.getMonth().toInt();
             y2 = end.getYear();
             if ((d2 == 31) && (d1 == 30)) {  // second ISDA adjustment
                 d2 = 30;
@@ -250,7 +250,7 @@ public class SerialDateUtilities {
 
         if (start.isOnOrBefore(end)) { // check the order of the dates
             d1 = start.getDayOfMonth();
-            m1 = start.getMonth().index;
+            m1 = start.getMonth().toInt();
             y1 = start.getYear();
 
             if (SerialDateUtilities.isLastDayOfFebruary(start)) {
@@ -261,7 +261,7 @@ public class SerialDateUtilities {
                 d1 = 30;
             }
             d2 = end.getDayOfMonth();
-            m2 = end.getMonth().index;
+            m2 = end.getMonth().toInt();
             y2 = end.getYear();
             if ((d2 == 31) && (d1 == 30)) {  // second PSA adjustment
                 d2 = 30;
@@ -297,13 +297,13 @@ public class SerialDateUtilities {
         final int y2;
         if (start.isBefore(end)) {
             d1 = start.getDayOfMonth();
-            m1 = start.getMonth().index;
+            m1 = start.getMonth().toInt();
             y1 = start.getYear();
             if (d1 == 31) {  // first European adjustment
                 d1 = 30;
             }
             d2 = end.getDayOfMonth();
-            m2 = end.getMonth().index;
+            m2 = end.getMonth().toInt();
             y2 = end.getYear();
             if (d2 == 31) {  // first European adjustment
                 d2 = 30;
@@ -332,7 +332,7 @@ public class SerialDateUtilities {
         final int dom;
         if (d.getMonth() == Month.FEBRUARY) {
             dom = d.getDayOfMonth();
-            if (DayDate.isLeapYear(d.getYear())) {
+            if (DateUtil.isLeapYear(d.getYear())) {
                 return (dom == 29);
             }
             else {
@@ -371,9 +371,9 @@ public class SerialDateUtilities {
             y1 = start.getYear();
             y2 = end.getYear();
             for (year = y1; year == y2; year++) {
-                if (DayDate.isLeapYear(year)) {
+                if (DateUtil.isLeapYear(year)) {
                     feb29 = DayDateFactory.makeDate(29, MonthConstants.FEBRUARY, year);
-                    if (feb29.isInRange(start, end, DayDate.DateInterval.CLOSED_RIGHT.index)) {
+                    if (feb29.isInRange(start, end, DateInterval.CLOSED_RIGHT)) {
                         count++;
                     }
                 }

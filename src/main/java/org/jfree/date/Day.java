@@ -12,14 +12,14 @@ public enum Day {
     SATURDAY(Calendar.SATURDAY),
     SUNDAY(Calendar.SUNDAY);
 
-    public final int index;
+    private final int index;
     private static DateFormatSymbols dateSymbols = new DateFormatSymbols();
 
     Day(int day) {
         index = day;
     }
 
-    public static Day make(int index) throws IllegalArgumentException {
+    public static Day dayFromInt(int index) throws IllegalArgumentException {
         for(Day d : Day.values())
             if(d.index == index)
                 return d;
@@ -50,5 +50,8 @@ public enum Day {
     }
     public String toString() {
         return  dateSymbols.getWeekdays()[index];
+    }
+    public int toInt() {
+        return this.index;
     }
 }

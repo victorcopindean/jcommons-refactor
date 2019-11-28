@@ -88,7 +88,7 @@ public class DayDateTest extends TestCase {
      * Problem set up.
      */
     protected void setUp() {
-        this.nov9Y2001 = DayDateFactory.makeDate(9, Month.NOVEMBER.index, 2001);
+        this.nov9Y2001 = DayDateFactory.makeDate(9, Month.NOVEMBER.toInt(), 2001);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DayDateTest extends TestCase {
     public void testAddMonthsTo9Nov2001() {
 
 
-        final DayDate jan9Y2002 = nov9Y2001.addMonths(2);
+        final DayDate jan9Y2002 = nov9Y2001.plusMonths(2);
         final DayDate answer = DayDateFactory.makeDate(9, 1, 2002);
         assertEquals(answer, jan9Y2002);
     }
@@ -107,7 +107,7 @@ public class DayDateTest extends TestCase {
      */
     public void testAddMonthsTo5Oct2003() {
         final DayDate d1 = DayDateFactory.makeDate(5, MonthConstants.OCTOBER, 2003);
-        final DayDate d2 = d1.addMonths(2);
+        final DayDate d2 = d1.plusMonths(2);
         assertEquals(d2, DayDateFactory.makeDate(5, MonthConstants.DECEMBER, 2003));
     }
 
@@ -116,23 +116,8 @@ public class DayDateTest extends TestCase {
      */
     public void testAddMonthsTo1Jan2003() {
         final DayDate d1 = DayDateFactory.makeDate(1, MonthConstants.JANUARY, 2003);
-        final DayDate d2 = d1.addMonths(0);
+        final DayDate d2 = d1.plusMonths(0);
         assertEquals(d2, d1);
-    }
-
-
-    /**
-     * 1900 is not a leap year.
-     */
-    public void testIsNotLeapYear1900() {
-        assertTrue(!DayDate.isLeapYear(1900));
-    }
-
-    /**
-     * 2000 is a leap year.
-     */
-    public void testIsLeapYear2000() {
-        assertTrue(DayDate.isLeapYear(2000));
     }
 
     /**
@@ -175,35 +160,35 @@ public class DayDateTest extends TestCase {
     public void testAddMonths() {
         DayDate d1 = DayDateFactory.makeDate(31, 5, 2004);
         
-        DayDate d2 = d1.addMonths(1);
+        DayDate d2 = d1.plusMonths(1);
         assertEquals(30, d2.getDayOfMonth());
-        assertEquals(6, d2.getMonth().index);
+        assertEquals(6, d2.getMonth().toInt());
         assertEquals(2004, d2.getYear());
         
-        DayDate d3 = d1.addMonths(2);
+        DayDate d3 = d1.plusMonths(2);
         assertEquals(31, d3.getDayOfMonth());
-        assertEquals(7, d3.getMonth().index);
+        assertEquals(7, d3.getMonth().toInt());
         assertEquals(2004, d3.getYear());
         
-        DayDate d4 = d2.addMonths(1);
+        DayDate d4 = d2.plusMonths(1);
         assertEquals(30, d4.getDayOfMonth());
-        assertEquals(7, d4.getMonth().index);
+        assertEquals(7, d4.getMonth().toInt());
         assertEquals(2004, d4.getYear());
     }
 
     public void testMonthCodeToQuarter() {
-        assertEquals(1, Month.make(1).quarter());
-        assertEquals(1, Month.make(2).quarter());
-        assertEquals(1, Month.make(3).quarter());
-        assertEquals(2, Month.make(4).quarter());
-        assertEquals(2, Month.make(5).quarter());
-        assertEquals(2, Month.make(6).quarter());
-        assertEquals(3, Month.make(7).quarter());
-        assertEquals(3, Month.make(8).quarter());
-        assertEquals(3, Month.make(9).quarter());
-        assertEquals(4, Month.make(10).quarter());
-        assertEquals(4, Month.make(11).quarter());
-        assertEquals(4, Month.make(12).quarter());
+        assertEquals(1, Month.monthFromInt(1).quarter());
+        assertEquals(1, Month.monthFromInt(2).quarter());
+        assertEquals(1, Month.monthFromInt(3).quarter());
+        assertEquals(2, Month.monthFromInt(4).quarter());
+        assertEquals(2, Month.monthFromInt(5).quarter());
+        assertEquals(2, Month.monthFromInt(6).quarter());
+        assertEquals(3, Month.monthFromInt(7).quarter());
+        assertEquals(3, Month.monthFromInt(8).quarter());
+        assertEquals(3, Month.monthFromInt(9).quarter());
+        assertEquals(4, Month.monthFromInt(10).quarter());
+        assertEquals(4, Month.monthFromInt(11).quarter());
+        assertEquals(4, Month.monthFromInt(12).quarter());
     }
 
     private static SpreadsheetDate d(int day, int month, int year){
@@ -288,16 +273,6 @@ public class DayDateTest extends TestCase {
         assertEquals(d(30,11,2019), dayDate.getEndOfMonth());
     }
 
-    /*public void testWeekInMonthToString() {
-        assertEquals("First", DayDate.WeekInMonth.toString(1));
-        assertEquals("Second", DayDate.WeekInMonth.toString(2));
-        assertEquals("Third", DayDate.WeekInMonth.toString(3));
-        assertEquals("Fourth", DayDate.WeekInMonth.toString(4));
-        assertEquals("Last", DayDate.WeekInMonth.toString(0));
-        assertEquals("SerialDate.weekInMonthToString(): invalid code.", DayDate.WeekInMonth.toString(8));
-    }*/
-
-
     public void testGetPreviousDayOfTheWeek() {
 
         assertEquals(d(17,11,2019), d(21,11,2019).getPreviousDayOfWeek(Day.SUNDAY));
@@ -318,13 +293,6 @@ public class DayDateTest extends TestCase {
         assertEquals(monthNamesExpected[0], monthNamesExpected[0]);
     }
 
-    public void testWeekDayRangeToString(){
-
-        assertEquals("Preceding", DayDate.WeekdayRange.PRECEDING.toString());
-        assertEquals("Nearest", DayDate.WeekdayRange.NEAREST.toString());
-        assertEquals("Following", DayDate.WeekdayRange.FOLLOWING.toString());
-
-    }
     public void testCreateInstance() {
         assertEquals(d(21,11,2019), DayDateFactory.makeDate(new GregorianCalendar(2019, Calendar.NOVEMBER,21).getTime()));
     }
@@ -332,6 +300,26 @@ public class DayDateTest extends TestCase {
     public void testToString() {
         DayDate date = DayDateFactory.makeDate(21,11,2019);
         assertEquals("21-November-2019", date.toString());
+    }
+
+    public void testDaysSince() {
+        DayDate date = DayDateFactory.makeDate(28, 11, 2019);
+        DayDate previousToDate = DayDateFactory.makeDate(25, 11, 2019);
+        DayDate afterDate = DayDateFactory.makeDate(30, 11, 2019);
+        DayDate sameDate = DayDateFactory.makeDate(28, 11, 2019);
+
+        assertEquals(3, date.daysSince(previousToDate));
+        assertEquals(-2, date.daysSince(afterDate));
+        assertEquals(0, date.daysSince(sameDate));
+    }
+
+    public void testIsOn() {
+        DayDate date = DayDateFactory.makeDate(28, 11, 2019);
+        DayDate anotherDate = DayDateFactory.makeDate(30, 11, 2019);
+        DayDate sameDate = DayDateFactory.makeDate(28, 11, 2019);
+
+        assertTrue(date.isOn(sameDate));
+        assertFalse(date.isOn(anotherDate));
     }
 
 }

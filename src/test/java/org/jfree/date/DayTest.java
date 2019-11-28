@@ -61,15 +61,15 @@ public class DayTest extends TestCase {
 
     public void testMake() {
 
-        assertEquals(Day.SUNDAY, Day.make(1));
-        assertEquals(Day.MONDAY, Day.make(2));
-        assertEquals(Day.TUESDAY, Day.make(3));
-        assertEquals(Day.WEDNESDAY, Day.make(4));
-        assertEquals(Day.THURSDAY, Day.make(5));
-        assertEquals(Day.FRIDAY, Day.make(6));
-        assertEquals(Day.SATURDAY, Day.make(7));
+        assertEquals(Day.SUNDAY, Day.dayFromInt(1));
+        assertEquals(Day.MONDAY, Day.dayFromInt(2));
+        assertEquals(Day.TUESDAY, Day.dayFromInt(3));
+        assertEquals(Day.WEDNESDAY, Day.dayFromInt(4));
+        assertEquals(Day.THURSDAY, Day.dayFromInt(5));
+        assertEquals(Day.FRIDAY, Day.dayFromInt(6));
+        assertEquals(Day.SATURDAY, Day.dayFromInt(7));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Day.make(8));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Day.dayFromInt(8));
 
     }
 

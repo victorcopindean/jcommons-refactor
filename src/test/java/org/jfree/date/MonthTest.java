@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Assertions;
 
 import static org.jfree.date.Month.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class MonthTest extends TestCase {
 
     public MonthTest(final String name) {
@@ -81,19 +79,19 @@ public class MonthTest extends TestCase {
 
     public void testMake() {
 
-        assertEquals(JANUARY, Month.make(1));
-        assertEquals(FEBRUARY, Month.make(2));
-        assertEquals(MARCH, Month.make(3));
-        assertEquals(APRIL, Month.make(4));
-        assertEquals(MAY, Month.make(5));
-        assertEquals(JUNE, Month.make(6));
-        assertEquals(JULY, Month.make(7));
-        assertEquals(AUGUST, Month.make(8));
-        assertEquals(SEPTEMBER, Month.make(9));
-        assertEquals(OCTOBER, Month.make(10));
-        assertEquals(NOVEMBER, Month.make(11));
-        assertEquals(DECEMBER, Month.make(12));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Month.make(14));
+        assertEquals(JANUARY, Month.monthFromInt(1));
+        assertEquals(FEBRUARY, Month.monthFromInt(2));
+        assertEquals(MARCH, Month.monthFromInt(3));
+        assertEquals(APRIL, Month.monthFromInt(4));
+        assertEquals(MAY, Month.monthFromInt(5));
+        assertEquals(JUNE, Month.monthFromInt(6));
+        assertEquals(JULY, Month.monthFromInt(7));
+        assertEquals(AUGUST, Month.monthFromInt(8));
+        assertEquals(SEPTEMBER, Month.monthFromInt(9));
+        assertEquals(OCTOBER, Month.monthFromInt(10));
+        assertEquals(NOVEMBER, Month.monthFromInt(11));
+        assertEquals(DECEMBER, Month.monthFromInt(12));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Month.monthFromInt(14));
 
     }
 

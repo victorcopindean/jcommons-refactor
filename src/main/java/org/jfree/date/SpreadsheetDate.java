@@ -55,9 +55,6 @@
 
 package org.jfree.date;
 
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  * Represents a date using an integer, in a similar fashion to the
  * implementation in Microsoft Excel.  The range of dates supported is
@@ -150,7 +147,7 @@ public class SpreadsheetDate extends DayDate {
             );
         }
 
-        if ((day >= 1) && (day <= DayDate.lastDayOfMonth(Month.make(month), year))) {
+        if ((day >= 1) && (day <= DateUtil.lastDayOfMonth(Month.monthFromInt(month), year))) {
             this.day = day;
         }
         else {
@@ -205,7 +202,7 @@ public class SpreadsheetDate extends DayDate {
       int[] daysToEndOfPrecedingMonth 
           = AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH;
 
-      if (isLeapYear(this.year)) {
+      if (DateUtil.isLeapYear(this.year)) {
           daysToEndOfPrecedingMonth 
               = LEAP_YEAR_AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH;
       }
@@ -257,7 +254,7 @@ public class SpreadsheetDate extends DayDate {
      * @return The month of the year.
      */
     public Month getMonth() {
-        return Month.make(this.month);
+        return Month.monthFromInt(this.month);
     }
 
     /**
@@ -269,19 +266,10 @@ public class SpreadsheetDate extends DayDate {
         return this.day;
     }
 
-    /**
-     * Returns a code representing the day of the week.
-     * <P>
-     * The codes are defined in the {@link DayDate} class as:
-     * <code>SUNDAY</code>, <code>MONDAY</code>, <code>TUESDAY</code>, 
-     * <code>WEDNESDAY</code>, <code>THURSDAY</code>, <code>FRIDAY</code>, and 
-     * <code>SATURDAY</code>.
-     *
-     * @return A code representing the day of the week.
-     */
-    public Day getDayOfWeek() {
-        return Day.make((this.serial + 6) % 7 + 1);
+    public Day getDayOfWeekForOrdinalZero() {
+        return Day.SATURDAY;
     }
+
 
     /**
      * Tests the equality of this date with an arbitrary object.
@@ -324,7 +312,7 @@ public class SpreadsheetDate extends DayDate {
      * @return The difference (in days) between this date and the specified 
      *         'other' date.
      */
-    public int compare(final DayDate other) {
+    public int daysSince(final DayDate other) {
         return this.serial - other.getOrdinalDay();
     }
 
@@ -337,121 +325,7 @@ public class SpreadsheetDate extends DayDate {
      *         is less than, equal to, or greater than the specified object.
      */
     public int compareTo(final Object other) {
-        return compare((DayDate) other);
-    }
-    
-    /**
-     * Returns true if this SerialDate represents the same date as the
-     * specified SerialDate.
-     *
-     * @param other  the date being compared to.
-     *
-     * @return <code>true</code> if this SerialDate represents the same date as
-     *         the specified SerialDate.
-     */
-    public boolean isOn(final DayDate other) {
-        return (this.serial == other.getOrdinalDay());
-    }
-
-    /**
-     * Returns true if this SerialDate represents an earlier date compared to
-     * the specified SerialDate.
-     *
-     * @param other  the date being compared to.
-     *
-     * @return <code>true</code> if this SerialDate represents an earlier date
-     *         compared to the specified SerialDate.
-     */
-    public boolean isBefore(final DayDate other) {
-        return (this.serial < other.getOrdinalDay());
-    }
-
-    /**
-     * Returns true if this SerialDate represents the same date as the
-     * specified SerialDate.
-     *
-     * @param other  the date being compared to.
-     *
-     * @return <code>true</code> if this SerialDate represents the same date
-     *         as the specified SerialDate.
-     */
-    public boolean isOnOrBefore(final DayDate other) {
-        return (this.serial <= other.getOrdinalDay());
-    }
-
-    /**
-     * Returns true if this SerialDate represents the same date as the
-     * specified SerialDate.
-     *
-     * @param other  the date being compared to.
-     *
-     * @return <code>true</code> if this SerialDate represents the same date
-     *         as the specified SerialDate.
-     */
-    public boolean isAfter(final DayDate other) {
-        return (this.serial > other.getOrdinalDay());
-    }
-
-    /**
-     * Returns true if this SerialDate represents the same date as the
-     * specified SerialDate.
-     *
-     * @param other  the date being compared to.
-     *
-     * @return <code>true</code> if this SerialDate represents the same date as
-     *         the specified SerialDate.
-     */
-    public boolean isOnOrAfter(final DayDate other) {
-        return (this.serial >= other.getOrdinalDay());
-    }
-
-    /**
-     * Returns <code>true</code> if this {@link DayDate} is within the
-     * specified range (INCLUSIVE).  The date order of d1 and d2 is not 
-     * important.
-     *
-     * @param d1  a boundary date for the range.
-     * @param d2  the other boundary date for the range.
-     *
-     * @return A boolean.
-     */
-    public boolean isInRange(final DayDate d1, final DayDate d2) {
-        return isInRange(d1, d2, DateInterval.OPEN.index);
-    }
-
-    /**
-     * Returns true if this SerialDate is within the specified range (caller
-     * specifies whether or not the end-points are included).  The order of d1
-     * and d2 is not important.
-     *
-     * @param d1  one boundary date for the range.
-     * @param d2  a second boundary date for the range.
-     * @param include  a code that controls whether or not the start and end 
-     *                 dates are included in the range.
-     *
-     * @return <code>true</code> if this SerialDate is within the specified 
-     *         range.
-     */
-    public boolean isInRange(final DayDate d1, final DayDate d2,
-                             final int include) {
-        final int s1 = d1.getOrdinalDay();
-        final int s2 = d2.getOrdinalDay();
-        final int start = Math.min(s1, s2);
-        final int end = Math.max(s1, s2);
-        
-        final int s = getOrdinalDay();
-        if (include == DateInterval.OPEN.index) {
-            return (s >= start && s <= end);
-        }
-        else if (include == DateInterval.CLOSED_LEFT.index) {
-            return (s >= start && s < end);            
-        }
-        else if (include == DateInterval.CLOSED_RIGHT.index) {
-            return (s > start && s <= end);            
-        }
-        else {
-            return (s > start && s < end);            
-        }    
+        return daysSince((DayDate) other);
     }
 
     /**
@@ -469,7 +343,7 @@ public class SpreadsheetDate extends DayDate {
         final int yy = ((y - 1900) * 365) + leapYearCount(y - 1);
         int mm = AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH[m];
         if (m > MonthConstants.FEBRUARY) {
-            if (DayDate.isLeapYear(y)) {
+            if (DateUtil.isLeapYear(y)) {
                 mm = mm + 1;
             }
         }
